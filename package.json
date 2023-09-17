@@ -1,0 +1,11 @@
+
+{
+  "name":"mstl",
+  "description":"squads is a esp32 IoT stl for useful thinks",
+  "url":"https://github.com/eotpcomic/squads",
+  "version":"0.8.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eotpcomic/squads.git"
+  }
+}

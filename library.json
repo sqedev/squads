@@ -1,0 +1,42 @@
+{
+    "name": "SQUADS",
+    "keywords": ["esp32", "task", "mutex", "queue", "convar", "container", "frameork", "socket"],
+    "description": "SQUADS is a esp32 IoT stl for useful thinks",
+    "authors":
+    {
+        "name": "eotpcomic",
+		"email": "ambersophia.schroeck@outlook.com",
+		"maintainer": true
+    },
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/eotpcomic/SQUADS"
+    },
+    "version": "2.40.1",
+    "frameworks": "espidf",
+    "platforms": "espressif32",
+    "export": {
+		"exclude":
+		[
+			"doc/*",
+			"doc",
+			"images",
+			"release",
+			"workspace",
+			"*.sh",
+			"configure",
+			"Makefile.in",
+			"Makefile",
+			".git",
+			".pio",
+			"platformio.*",
+			".gitignore",
+			"example/.git",
+			"*.s"
+		]
+	},
+	"build": {
+		"flags": "-DRELEASE"
+	}
+}
