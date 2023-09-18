@@ -20,7 +20,7 @@
 
 #include "basic_random_impl.hpp"
 #include "basic_random_lfsr.hpp"
-#include "basic_ramdom_xorshift.hpp"
+#include "basic_random_xorshift.hpp"
 
 namespace squads {
     using random_xorshift = basic_ramdom_xorshift;
