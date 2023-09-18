@@ -13,21 +13,31 @@
 *
 *You should have received a copy of the GNU Lesser General Public
 *License along with the SQUADS  Library; if not, see
-*<https://www.gnu.org/licenses/>.
-*/
-#ifndef __SQUADS_ADDRESSOF_H__
-#define __SQUADS_ADDRESSOF_H__
+*<https://www.gnu.org/licenses/>.*/
+
+#ifndef __SQUADS_UINT128_H__
+#define __SQUADS_UINT128_H__
+
+#include "config.hpp"
+
+#include <stddef.h>
+#include <stdint.h>
+
 
 
 namespace squads {
+    struct basic_uint128_t {
+        union {
+            struct {
+                uint64_t high;
+                uint64_t low;
+            };
+            uint64_t value[2];
+        };
+    };
 
-	template<class T>
-	constexpr inline T* addressof(T& o) noexcept {
-		return __builtin_addressof(o);
-	}
-	template<class T> const T* addressof(const T&&) = delete;
-
+    using uint128_t       = basic_uint128_t;
+    using uint_least128_t = basic_uint128_t;
 }
 
-
-#endif // __SQUADS_ADDRESSOF_H__
+#endif

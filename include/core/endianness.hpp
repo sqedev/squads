@@ -15,19 +15,42 @@
 *License along with the SQUADS  Library; if not, see
 *<https://www.gnu.org/licenses/>.
 */
-#ifndef __SQUADS_ADDRESSOF_H__
-#define __SQUADS_ADDRESSOF_H__
 
+#ifndef __SQUADS_ENDIAN_H__
+#define __SQUADS_ENDIAN_H__
+
+#include "config.hpp"
+#include "functional.hpp"
 
 namespace squads {
 
-	template<class T>
-	constexpr inline T* addressof(T& o) noexcept {
-		return __builtin_addressof(o);
+	namespace endian  {
+		enum class order {
+			little,
+			big,
+			native
+		};
+		enum class align {
+			no,
+			yes
+		};
 	}
-	template<class T> const T* addressof(const T&&) = delete;
-
+	/**
+	 * @brief Get the underlying endian architecture?
+	 * @return If true then is the underlying architecture is big endian and false if not.
+	 */
+    struct system_endian {
+    	/**
+		 * @brief Get the underlying endian architecture?
+		 * @return The underlying endian architecture.
+		 */
+    	operator endian::order () const noexcept  {
+			short tester = 0x0001;
+			return  (*(char*)&tester != 0) ? endian::order::little : endian::order::big;
+    	}
+    };
 }
 
 
-#endif // __SQUADS_ADDRESSOF_H__
+
+#endif 
