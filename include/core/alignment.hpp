@@ -28,7 +28,7 @@
 #include "type_traits.hpp"
 #include "defines.hpp"
 
-namespace mofw {
+namespace squads {
     namespace internal {
 
         template<typename T>
@@ -70,6 +70,7 @@ namespace mofw {
         };
     } // internal
 
+	
     template<> struct is_pod<internal::aligned1> : public true_type{};
 	template<> struct is_pod<internal::aligned2> : public true_type{};
 	template<> struct is_pod<internal::aligned4> : public true_type{};

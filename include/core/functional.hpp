@@ -244,8 +244,8 @@ namespace squads {
 
 	template <size_t VAL, size_t X = 1>
 	struct sqrt{
-		using type = typename mofw::conditional<
-			((X * X) > VAL), mofw::integral_constant<intmax_t, X - 1>, mofw::sqrt<VAL, X + 1> >::type;
+		using type = typename squads::conditional<
+			((X * X) > VAL), squads::integral_constant<intmax_t, X - 1>, squads::sqrt<VAL, X + 1> >::type;
 		static constexpr size_t value = type::value;
 	};
 
