@@ -36,11 +36,11 @@ namespace squads {
 		using base_type = basic_random_impl<unsigned int> ;
           using this_type = basic_ramdom_xorshift;
 
-          using seed_t = base_type::seed_t;
-          using result_type = base_type::result_type;
-          using rand8_type = base_type::rand8_type;
-          using rand16_type = base_type::rand16_type;
-          using rand32_type = base_type::rand32_type;
+          using seed_t = typename base_type::seed_t;
+          using result_type = typename base_type::result_type;
+          using rand8_type = typename base_type::rand8_type;
+          using rand16_type = typename base_type::rand16_type;
+          using rand32_type = typename base_type::rand32_type;
 	
 		basic_ramdom_xorshift(seed_t startSeed)
             : base_type(startSeed) { init(startSeed); }
