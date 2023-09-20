@@ -24,6 +24,7 @@
 #include "arch/esp32/config.hpp"
 #endif
 
+#define SQUADS_PORTMAX_DELAY                     SQUADS_ARCH_CONFIG_MAX_DELAY
 
 /// @brief Pre defined helper values for config items - Use a mutex
 #define SQUADS_THREAD_CONFIG_MUTEX                1
@@ -229,16 +230,6 @@
 // end workqueue config
 
 
-// start SEMAPHORE config
-//==================================
-#ifndef SQUADS_THREAD_CONFIG_TIMEOUT_SEMAPHORE_DEFAULT
-    /**
-     * The default initial timeout for semaphore lock (counting semaphore and binary semaphore)
-     * Can override
-     * @note default:  (unsigned int) 0xffffffffUL
-     */
-    #define SQUADS_THREAD_CONFIG_TIMEOUT_SEMAPHORE_DEFAULT  (unsigned int) 0xffffffffUL
-#endif
 
 #ifndef SQUADS_THREAD_CONFIG_CSEMAPHORE_MIN_COUNT
     /**
@@ -256,15 +247,6 @@
 #endif
 // end SEMAPHORE config
 
-// start mutex config
-#ifndef SQUADS_THREAD_CONFIG_TIMEOUT_MUTEX_DEFAULT
-    /**
-     * The default initial timeout for mutex lock (recursive and normal)
-     * Can override
-     * @note default:  (unsigned int) 0xffffffffUL)
-     */
-    #define SQUADS_THREAD_CONFIG_TIMEOUT_MUTEX_DEFAULT      (unsigned int) 0xffffffffUL
-#endif
 
 #ifndef SQUADS_THREAD_CONFIG_RECURSIVE_MUTEX_CHEAKING
     /**
@@ -275,30 +257,6 @@
 #endif
 // end mutex config
 
-// start queue config
-#ifndef SQUADS_THREAD_CONFIG_TIMEOUT_QUEUE_DEFAULT
-    /**
-     * The default initial timeout for all queues
-     * Can override
-     * @note default:  (unsigned int) 0xffffffffUL)
-     */
-    #define SQUADS_THREAD_CONFIG_TIMEOUT_QUEUE_DEFAULT      (unsigned int) 0xffffffffUL
-#endif
-//==================================
-// end queue config
-
-// start tasklet config
-//==================================
-#ifndef SQUADS_THREAD_CONFIG_TIMEOUT_COROUTINE_DEFAULT
-    /**
-     * The default initial timeout for coroutine (recursive and normal)
-     * Can override
-     * @note default:  (unsigned int) 0xffffffffUL)
-     */
-    #define SQUADS_THREAD_CONFIG_TIMEOUT_COROUTINE_DEFAULT  (unsigned int) 0xffffffffUL
-#endif
-//==================================
-// end tasklet config
 
 // start sharedobject config
 //==================================
@@ -357,16 +315,6 @@
 #endif
 //==================================
 // end net / socket config
-
-#ifndef SQUADS_THREAD_CONFIG_PREVIEW_FUTURE
-    /**
-     * Whenn SQUADS_THREAD_CONFIG_YES then activate develop unsafe future for next major version
-     * not for production use
-     *
-     * @note default:  SQUADS_THREAD_CONFIG_NO
-     */
-    #define SQUADS_THREAD_CONFIG_PREVIEW_FUTURE              SQUADS_THREAD_CONFIG_NO
-#endif
 
 
 
