@@ -1,0 +1,153 @@
+/*
+*This file is part of the SQUADS Library (https://github.com/eotpcomic/squads ).
+*Copyright (c) 2023 Amber-Sophia Schroeck
+*
+*The SQUADS Library is free software; you can redistribute it and/or modify
+*it under the terms of the GNU Lesser General Public License as published by
+*the Free Software Foundation, version 2.1, or (at your option) any later version.
+
+*The SQUADS Library is distributed in the hope that it will be useful, but
+*WITHOUT ANY WARRANTY; without even the implied warranty of
+*MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+*General Public License for more details.
+*
+*You should have received a copy of the GNU Lesser General Public
+*License along with the SQUADS  Library; if not, see
+*<https://www.gnu.org/licenses/>.
+*/
+#ifndef __SQUADS_ARCH_QUEUE_H__
+#define __SQUADS_ARCH_QUEUE_H__
+
+#include "config.hpp"
+#include "defines.hpp"
+
+namespace squads {
+    namespace arch {
+        class arch_queue_impl {
+        public:
+            /**
+             *  ctor
+             * 
+             *  @param maxItems Maximum number of items this basic_queue can hold.
+             *  @param itemSize Size of an item in a basic_queue.
+             */
+            arch_queue_impl(unsigned int maxItems, unsigned int itemSize) 
+                : m_pHandle(0), m_imaxItems(maxItems), 
+                  m_iitemSize(itemSize) { }
+
+            arch_queue_impl(const arch_queue_impl& other) 
+                : m_pHandle(other.m_pHandle), m_imaxItems(other.m_imaxItems), 
+                  m_iitemSize(other.m_iitemSize) {  }
+            /**
+             *  dtor
+             */
+            virtual ~arch_queue_impl() {  }
+
+            /**
+             * Create the basic_queue
+             * 
+             *  @return '0': the basic_queue was created
+             *          '1': the basic_queue is allready created
+             *          '99': basic_queue can not created
+             * 
+             */ 
+            virtual int create();
+
+            /**
+             * Destroy the Queue
+             * 
+             *  @return '0' the basic_queue was destroyed 
+             *          '2' the basic_queue is not created
+             */
+            virtual int destroy();
+            /**
+             *  Add an item to the back of the basic_queue.
+             *
+             *  @param item The item you are adding.
+             *  @param timeout How long to wait to add the item to the basic_queue 
+             *  @return '0' the item was added, '1' on an error
+             *          and '2' when the basic_queue not created
+             */
+            virtual int enqueue_back(void *item, unsigned int timeout = SQUADS_PORTMAX_DELAY);
+            /**
+             *  Add an item to the front of the basic_queue.
+             *
+             *  @param item The item you are adding.
+             *  @param timeout How long to wait to add the item to the basic_queue 
+             *  @return '0' the item was added, '1' on an error
+             *          and '2' when the basic_queue not created
+             */
+            virtual int enqueue_front(void *item, unsigned int timeout = SQUADS_PORTMAX_DELAY);
+
+
+            /**
+             *  Make a copy of an item from the front of the basic_queue. 
+             *  This will not remove it
+             *
+             *  @param item Where the item you are getting will be returned to.
+             *  @param timeout How long to wait 
+             *  @return '0' if an item was copied, '1' on error 
+             *  and '2' when the basic_queue not created
+             */
+            virtual int peek(void *item, unsigned int timeout = SQUADS_PORTMAX_DELAY);
+
+            /**
+             *  Remove an item from the front of the basic_queue.
+             *
+             *  @param item Where the item you are removing will be returned to.
+             *  @param timeout How long to wait to remove an item to the basic_queue.
+             *  @return '0' the item was removed, '1' on an error
+             *          and '2' when the basic_queue not created
+             */
+            virtual int dequeue(void *item,  unsigned int timeout = SQUADS_PORTMAX_DELAY);
+
+            
+        
+            /**
+             *  Remove all objects from the basic_queue.
+             */
+            virtual int clear();
+
+            /**
+             *  How many items are currently in the basic_queue.
+             *  @return the number of items in the basic_queue.
+             */
+            virtual unsigned int get_num_items();
+
+            /**
+             *  How many empty spaves are currently left in the basic_queue.
+             *  @return the number of remaining spaces.
+             */
+            virtual unsigned int get_left();
+
+            /**
+             *  get the Arch basic_queue handle
+             *  @return the Arch handle
+             */
+            void*  get_handle() { return m_pHandle; }
+
+            bool   is_created() { return m_pHandle != NULL; }
+
+            /**
+             *  Is the basic_queue empty?
+             *  @return true the basic_queue is empty and false when not
+             */
+            virtual bool is_empty();
+            /**
+             *  Is the basic_queue full?
+             */
+            virtual bool is_full();
+        private:
+            /**
+             *  Arch basic_queue handle.
+             */
+            void*  m_pHandle;
+
+            unsigned int m_imaxItems;
+            unsigned int m_iitemSize;
+
+        };
+    }
+}
+
+#endif
