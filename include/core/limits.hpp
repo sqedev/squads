@@ -50,7 +50,7 @@ namespace squads {
 	};
 
 	template <typename T>
-	class numeric_limits {
+	struct  numeric_limits {
 	public:
 		using value_type = T;
 
@@ -92,20 +92,20 @@ namespace squads {
 	};
 
 	template <typename T>
-	class numeric_limits<const T> : public numeric_limits<T> { };
+	struct  numeric_limits<const T> : public numeric_limits<T> { };
 
 	template <typename T>
-	class numeric_limits<volatile T> : public numeric_limits<T> { };
+	struct  numeric_limits<volatile T> : public numeric_limits<T> { };
 
 	template <typename T>
-	class numeric_limits<const volatile T> : public numeric_limits<T> { };
+	struct  numeric_limits<const volatile T> : public numeric_limits<T> { };
 
 
 	/**
 	 * @brief Spezial version for bool
 	 */
 	template<>
-  	class numeric_limits<bool>  {
+  	struct  numeric_limits<bool>  {
 	public:
   		using value_type = bool;
 
@@ -130,7 +130,7 @@ namespace squads {
 	 * @brief Spezial version for char
 	 */
 	template<>
-  	class numeric_limits<char>  {
+  	struct  numeric_limits<char>  {
   		using value_type = char;
 
 		static constexpr value_type min()        	{ return value_type(-128); }
@@ -154,7 +154,7 @@ namespace squads {
 	 * @brief Spezial version for uchar
 	 */
 	template<>
-  	class numeric_limits<unsigned char>  {
+  	struct  numeric_limits<unsigned char>  {
   		using value_type = unsigned char;
 
 		static constexpr value_type min()        	{ return value_type(0U); }
@@ -178,7 +178,7 @@ namespace squads {
 	 * @brief Spezial version for uchar
 	 */
 	template<>
-  	class numeric_limits<signed char>  {
+  	struct  numeric_limits<signed char>  {
   		using value_type = signed char;
 
 		static constexpr value_type min()        	{ return value_type(-128); }
@@ -202,7 +202,7 @@ namespace squads {
 	 * @brief Spezial version for short
 	 */
 	template<>
-  	class numeric_limits<short>  {
+  	struct  numeric_limits<short>  {
   		using value_type = short;
 
 		static constexpr value_type min()        	{ return value_type(-32768); }
@@ -226,7 +226,7 @@ namespace squads {
 	 * @brief Spezial version for unsigned short
 	 */
 	template<>
-  	class numeric_limits<unsigned short>  {
+  	struct  numeric_limits<unsigned short>  {
   		using value_type = unsigned short;
 
 		static constexpr value_type min()        	{ return value_type(0U); }
@@ -250,7 +250,7 @@ namespace squads {
 	 * @brief Spezial version for int
 	 */
 	template<>
-  	class numeric_limits<int>  {
+  	struct  numeric_limits<int>  {
   		using value_type = int;
 
 		static constexpr value_type min()        	{ return value_type(-2147483648); }
@@ -274,7 +274,7 @@ namespace squads {
 	 * @brief Spezial version for unsigned int
 	 */
 	template<>
-  	class numeric_limits<unsigned int>  {
+  	struct  numeric_limits<unsigned int>  {
   		using value_type = unsigned int;
 
 		static constexpr value_type min()        	{ return value_type(0U); }
@@ -298,7 +298,7 @@ namespace squads {
 	 * @brief Spezial version for long
 	 */
 	template<>
-  	class numeric_limits<long>  {
+  	struct  numeric_limits<long>  {
   		using value_type = long;
 
 		static constexpr value_type min()        	{ return value_type(-9223372036854775807 - 1L); }
@@ -322,7 +322,7 @@ namespace squads {
 	 * @brief Spezial version for unsigned long
 	 */
 	template<>
-  	class numeric_limits<unsigned long>  {
+  	struct  numeric_limits<unsigned long>  {
   		using value_type = unsigned long;
 
 		static constexpr value_type min()        	{ return value_type(0U); }
@@ -346,7 +346,7 @@ namespace squads {
 	 * @brief Spezial version for long long
 	 */
 	template<>
-  	class numeric_limits<long long>  {
+  	struct numeric_limits<long long>  {
   		using value_type = long long;
 
 		static constexpr value_type min()        	{ return value_type(-9223372036854775807LL - 1LL); }
@@ -370,7 +370,7 @@ namespace squads {
 	 * @brief Spezial version for unsigned long long
 	 */
 	template<>
-  	class numeric_limits<unsigned long long>  {
+  	struct numeric_limits<unsigned long long>  {
   		using value_type = unsigned long long;
 
 		static constexpr value_type min()        	{ return value_type(0U); }
@@ -395,7 +395,7 @@ namespace squads {
 	 * @brief Spezial version for float
 	 */
 	template<>
-  	class numeric_limits<float> {
+  	struct numeric_limits<float> {
   		using value_type = float;
 
 		static constexpr value_type min()        	{ return __FLT_MIN__; }
@@ -442,7 +442,7 @@ namespace squads {
 	 * @brief Spezial version for double
 	 */
 	template<>
-  	class numeric_limits<double> {
+  	struct  numeric_limits<double> {
   		using value_type = double;
 
 		static constexpr value_type min()        	{ return __DBL_MIN__; }
@@ -488,7 +488,7 @@ namespace squads {
 	 * @brief Spezial version for long double
 	 */
 	template<>
-  	class numeric_limits<long double> {
+  	struct  numeric_limits<long double> {
   		using value_type = long double;
 
 		static constexpr value_type min()        	{ return __LDBL_MIN__; }
