@@ -1,5 +1,5 @@
 # SQUADS
-The SQUADS is a powerfull libary for esp32 developtment
+The SQUADS is other stl like framwork, based on my old RoseLeBlood/MiniThread lib. 
 
 
 
