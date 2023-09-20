@@ -19,6 +19,7 @@
 #ifndef __SQUADS_ARCH_ESP32_H__
 #define __SQUADS_ARCH_ESP32_H__
 
+#include "freertos/FreeRTOS.h"
 /**
  * All cunfig properties can override in your sdkconfig.h
  */
@@ -26,7 +27,10 @@
 #include "sdkconfig.h"
 #endif
 
+#ifndef CHAR_BIT
 #define CHAR_BIT 8
+#endif
+
 #define SQUADS_THREAD_CONFIG_SIZE_TYPE          long unsigned int
 #define SQUADS_THREAD_CONFIG_STACK_TYPE         unsigned long
 #define SQUADS_THREAD_CONFIG_BASIC_ALIGNMENT     sizeof(unsigned char*)
@@ -46,6 +50,11 @@
 #define SQUADS_ARCH_CONFIG_STACK_DEPTH          8192
 #define SQUADS_ARCH_CONFIG_MIN_STACK_DEPTH      4096
 #define SQUADS_ARCH_CONFIG_TASK_IDLE            tskIDLE_PRIORITY     
-#define SQUADS_ARCH_CONFIG_TASK_MAXPRO          configMAX_PRIORITIES                  
+#define SQUADS_ARCH_CONFIG_TASK_MAXPRO          configMAX_PRIORITIES   
+
+#define SQUADS_ARCH_CONFIG_MAX_DELAY            portMAX_DELAY
+#define SQUADS_ARCH_NSPER_TICK                  (  1000000000LL / configTICK_RATE_HZ )
+#define SQUADS_ARCH_CLOCKS_PER_SEC              ( ( clock_t ) configTICK_RATE_HZ )
+#define SQUADS_ARCH_TIMESTAMP_RESELUTION        1000000LL
 
 #endif
