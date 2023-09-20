@@ -75,8 +75,10 @@
 #define BitMask(t,n)	(t(~t(0)) >> (BitsInType(t) - (n)))
 
 namespace squads {
+    class null_type { };
+    
     using max_align_t 	= uintptr_t;
-    using nullptr_t 	= decltype(nullptr);
+    //using nullptr_t 	= decltype(nullptr);
     using addrof_null_t = nullptr_t ;
 
     using size_t 	 	= SQUADS_THREAD_CONFIG_SIZE_TYPE;
@@ -104,7 +106,7 @@ namespace squads {
 
 	using ::gettimeofday;
 
-	class null_type { };
+	
 
 	namespace math {
 		constexpr double pi               = 3.14159265358979;
