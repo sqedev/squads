@@ -41,7 +41,7 @@ namespace squads {
             /**
              *  dtor
              */
-            virtual ~arch_queue_impl() {  }
+            ~arch_queue_impl() {  }
 
             /**
              * Create the basic_queue
@@ -51,7 +51,7 @@ namespace squads {
              *          '99': basic_queue can not created
              * 
              */ 
-            virtual int create();
+            int create();
 
             /**
              * Destroy the Queue
@@ -59,7 +59,7 @@ namespace squads {
              *  @return '0' the basic_queue was destroyed 
              *          '2' the basic_queue is not created
              */
-            virtual int destroy();
+            int destroy();
             /**
              *  Add an item to the back of the basic_queue.
              *
@@ -68,7 +68,7 @@ namespace squads {
              *  @return '0' the item was added, '1' on an error
              *          and '2' when the basic_queue not created
              */
-            virtual int enqueue_back(void *item, unsigned int timeout = SQUADS_PORTMAX_DELAY);
+            int enqueue_back(void *item, unsigned int timeout = SQUADS_PORTMAX_DELAY);
             /**
              *  Add an item to the front of the basic_queue.
              *
@@ -77,7 +77,7 @@ namespace squads {
              *  @return '0' the item was added, '1' on an error
              *          and '2' when the basic_queue not created
              */
-            virtual int enqueue_front(void *item, unsigned int timeout = SQUADS_PORTMAX_DELAY);
+            int enqueue_front(void *item, unsigned int timeout = SQUADS_PORTMAX_DELAY);
 
 
             /**
@@ -89,7 +89,7 @@ namespace squads {
              *  @return '0' if an item was copied, '1' on error 
              *  and '2' when the basic_queue not created
              */
-            virtual int peek(void *item, unsigned int timeout = SQUADS_PORTMAX_DELAY);
+            int peek(void *item, unsigned int timeout = SQUADS_PORTMAX_DELAY);
 
             /**
              *  Remove an item from the front of the basic_queue.
@@ -99,26 +99,33 @@ namespace squads {
              *  @return '0' the item was removed, '1' on an error
              *          and '2' when the basic_queue not created
              */
-            virtual int dequeue(void *item,  unsigned int timeout = SQUADS_PORTMAX_DELAY);
+            int dequeue(void *item,  unsigned int timeout = SQUADS_PORTMAX_DELAY);
 
-            
-        
+            /**
+             *  Overwritte an item of the basic_queue.
+             *
+             *  @param item The item you are overwritte.
+             *  @param timeout How long to wait to add the item to the basic_queue 
+             *  @return '0' the item was overwritte
+             *          and '2' when the basic_queue not created
+             */ 
+            int overwrite(void *item,  unsigned int timeout = SQUADS_PORTMAX_DELAY);
             /**
              *  Remove all objects from the basic_queue.
              */
-            virtual int clear();
+            int clear();
 
             /**
              *  How many items are currently in the basic_queue.
              *  @return the number of items in the basic_queue.
              */
-            virtual unsigned int get_num_items();
+            unsigned int get_num_items();
 
             /**
              *  How many empty spaves are currently left in the basic_queue.
              *  @return the number of remaining spaces.
              */
-            virtual unsigned int get_left();
+            unsigned int get_left();
 
             /**
              *  get the Arch basic_queue handle
@@ -132,11 +139,11 @@ namespace squads {
              *  Is the basic_queue empty?
              *  @return true the basic_queue is empty and false when not
              */
-            virtual bool is_empty();
+            bool is_empty();
             /**
              *  Is the basic_queue full?
              */
-            virtual bool is_full();
+            bool is_full();
         private:
             /**
              *  Arch basic_queue handle.

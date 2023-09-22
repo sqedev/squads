@@ -54,7 +54,7 @@ namespace squads {
     template <class T, class TQUEUE> 
     class basic_queue_iterator {
     public:
-        using iterator_category = mofw::forward_iterator_tag;
+        using iterator_category = squads::forward_iterator_tag;
         using value_type = T;
         using pointer = value_type*;
         using reference = value_type&;
@@ -79,8 +79,14 @@ namespace squads {
         reference operator*() const { return *m_pValue; }
         pointer operator->() const  { return m_pValue; }
 
-        self_type& operator++()     { 
-            if(!m_bIsEnd) { m_pQueue.dequeue(m_pValue); } return *this; }
+        bool is_null() {
+            return m_pValue != NULL; 
+        }
+
+        self_type& operator++()     {  
+            m_pQueue.dequeue(m_pValue); 
+            return *this; 
+        }
 
         self_type operator++(int)   { 
             self_type copy(*this); ++(*this); return copy; }
@@ -90,10 +96,13 @@ namespace squads {
 
         bool operator != (const self_type& rhs) const {
             return !(rhs == *this); }
+
+        operator bool() {
+            return m_pValue != NULL;
+        }
     private:
         pointer*      m_pValue;
         pointer_queue m_pQueue;
-        bool          m_bIsEnd;
     };
 
     template <typename T, unsigned int maxItems = 32>
@@ -106,8 +115,6 @@ namespace squads {
         using self_type = basic_queue<T, maxItems>;
         using difference_type = squads::ptrdiff_t;
         using size_type = squads::size_t;
-        using allocator_type = TAllocator;
-        using deleter_type = TDeleter;
         using iterator = basic_queue_iterator<T, self_type>;
         using const_iterator = const iterator;
         using cointainer_type = internal::arch_queue_impl;
@@ -139,37 +146,42 @@ namespace squads {
 
             }
         }
-        ~basic_queue()  { m_archQueueType.destroy(); }
+        virtual ~basic_queue()  { m_archQueueType.destroy(); }
 
-        iterator        begin() 		{ return iterator( intern_getfront(), m_archQueueType); }
-        const_iterator  begin() const 	{ return const_iterator( intern_getfront(), m_archQueueType); }
+        virtual iterator        begin() 		{ return iterator( intern_getfront(), m_archQueueType); }
+        virtual const_iterator  begin() const 	{ return const_iterator( intern_getfront(), m_archQueueType); }
 
-        iterator        end() 			{ return iterator(m_pEnd, &m_archQueueType, true); }
-        const_iterator  end() const 	{ return const_iterator(m_pEnd, &m_archQueueType, true); }
+        virtual iterator        end() 			{ return iterator(m_pEnd, &m_archQueueType); }
+        virtual const_iterator  end() const 	{ return const_iterator(m_pEnd, &m_archQueueType); }
 
-		reference       front()         { assert(!empty()); return *intern_getfront(); }
-		const_reference front() const   { assert(!empty()); return *intern_getfront(); }
+		virtual reference       front()         { assert(!empty()); return *intern_getfront(); }
+		virtual const_reference front() const   { assert(!empty()); return *intern_getfront(); }
 
-		reference       back()          { assert(!empty()); return *m_pEnd; }
-		const_reference back() const    { assert(!empty()); return *m_pEnd; }
+		virtual reference       back()          { assert(!empty()); return *m_pEnd; }
+		virtual const_reference back() const    { assert(!empty()); return *m_pEnd; }
 
         bool            empty() const   { return m_archQueueType.is_empty(); }
 		size_type       size() const    { return m_archQueueType.get_num_items(); }
 
-		void            push(const value_type& value, unsigned int timeout = SQUADS_PORTMAX_DELAY) {
+		virtual bool    push(const value_type& value, unsigned int timeout = SQUADS_PORTMAX_DELAY) {
              
             if( m_archQueueType.enqueue_back(&value) == 0) {
                     m_pEnd = &value;
+                    return true;
             }
+            return false;
         }
-		void            push(value_type&& x, unsigned int timeout = SQUADS_PORTMAX_DELAY) {
+		virtual bool    push(value_type&& x, unsigned int timeout = SQUADS_PORTMAX_DELAY) {
             if( m_archQueueType.enqueue_back(squads::move(x)) == 0) {
                     m_pEnd = &squads::move(x);
+                    return true;
             }
+            return false;
         }
 
-		void            pop(value_type* value = NULL, unsigned int timeout = SQUADS_PORTMAX_DELAY) {
-            m_archQueueType.dequeue(value, timeout);
+		bool            pop(value_type* value = NULL, unsigned int timeout = SQUADS_PORTMAX_DELAY) {
+           return m_archQueueType.dequeue(value, timeout) == 0;
+
         }
         /**
          * @brief Clear the queue
@@ -212,7 +224,7 @@ namespace squads {
             m_archQueueType.peek(m_pFront, SQUADS_PORTMAX_DELAY);
             return m_pFront;
         }
-    private:
+    protected:
         cointainer_type     m_archQueueType;
         pointer             m_pEnd;
         pointer             m_pFront;
