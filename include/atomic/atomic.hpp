@@ -29,6 +29,7 @@
 #define __IMPL_ATOMIC_TASK_TYPE void
 #endif
 
+
 namespace squads {
     namespace atomic {
         /**
@@ -361,7 +362,7 @@ namespace squads {
             using pointer = T*;
             using base_type = basic_atomic_impl<pointer, TTASK> ;
             using self_type = _atomic_ptr<pointer, TTASK>;
-            using difference_type = mofw::ptrdiff_t;
+            using difference_type = squads::ptrdiff_t;
 
             _atomic_ptr() = default;
             ~_atomic_ptr() = default;

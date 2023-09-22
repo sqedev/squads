@@ -18,8 +18,13 @@
 #ifndef __SQUADS_ATOMIC_WAITSTATE_H__
 #define __SQUADS_ATOMIC_WAITSTATE_H__
 
+#include "arch/arch_utils.hpp"
+
+#if 0
 #include "defines.hpp"
 #include "flags.hpp"
+
+
 
 namespace squads {
     namespace atomic {
@@ -51,7 +56,7 @@ namespace squads {
                 for (int i = 0; i < 10; i++) {
                     if (pred())
                         return;
-                    taskYIELD();
+                    arch::yield();
                 }
 
                 m_waiters.fetch_add(1, memory_order::SeqCst);
@@ -76,5 +81,7 @@ namespace squads {
         };
     }
 }
+
+#endif
 
 #endif

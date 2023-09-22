@@ -19,7 +19,7 @@
 #define __SQUADS_ATOMIC_INTERNAL_GCC_H__
 
 #include "defines.hpp"
-
+#include "flags.hpp"
 
 #ifdef __GCC_ATOMIC_BOOL_LOCK_FREE
 #define	ATOMIC_BOOL_LOCK_FREE		__GCC_ATOMIC_BOOL_LOCK_FREE
@@ -60,7 +60,7 @@ namespace squads {
          */
         template <typename T >
         struct basic_atomic_gcc {
-            static_assert(__is_trivially_copyable(T),"mofw::atomic requires a trivially copyable type");
+            static_assert(__is_trivially_copyable(T),"squads::atomic requires a trivially copyable type");
             static_assert(sizeof(T) > 0, "Incomplete or zero-sized types are not supported");
 
             static constexpr bool is_always_lock_free  = __atomic_always_lock_free(sizeof(T), 0);
