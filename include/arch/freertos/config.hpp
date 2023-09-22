@@ -16,8 +16,8 @@
 *<https://www.gnu.org/licenses/>.
 */
 
-#ifndef __SQUADS_ARCH_ESP32_H__
-#define __SQUADS_ARCH_ESP32_H__
+#ifndef __SQUADS_ARCH_FREERTOS_H__
+#define __SQUADS_ARCH_FREERTOS_H__
 
 #include "freertos/FreeRTOS.h"
 /**
@@ -33,7 +33,7 @@
 
 #define SQUADS_THREAD_CONFIG_SIZE_TYPE          long unsigned int
 #define SQUADS_THREAD_CONFIG_STACK_TYPE         unsigned long
-#define SQUADS_THREAD_CONFIG_BASIC_ALIGNMENT     sizeof(unsigned char*)
+#define SQUADS_THREAD_CONFIG_BASIC_ALIGNMENT    sizeof(unsigned char*)
 
 /// @brief The max number of usable cores
 #define SQUADS_THREAD_CONFIG_CORE_MAX   (portNUM_PROCESSORS - 1)
@@ -43,7 +43,6 @@
  * Use for indicating the task has no affinity core
  */
 #define SQUADS_THREAD_CONFIG_CORE_IFNO  tskNO_AFFINITY
-
 
 #define SQUADS_ARCH_CONFIG_BASE_CORE            0
 #define SQUADS_ARCH_CONFIG_WORKQUEUE_CORE       1
@@ -56,5 +55,6 @@
 #define SQUADS_ARCH_NSPER_TICK                  (  1000000000LL / configTICK_RATE_HZ )
 #define SQUADS_ARCH_CLOCKS_PER_SEC              ( ( clock_t ) configTICK_RATE_HZ )
 #define SQUADS_ARCH_TIMESTAMP_RESELUTION        1000000LL
-
+#define SQUADS_ARCH_SUPPORT_DYNAMIC_ALLOCATION  configSUPPORT_DYNAMIC_ALLOCATION
+#define SQUADS_ARCH_QUEUE_REGISTRY_SIZE         configQUEUE_REGISTRY_SIZE
 #endif
