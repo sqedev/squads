@@ -62,6 +62,25 @@ int arch_queue_impl::enqueue_front(void *item, unsigned int timeout) {
 
     return success == pdTRUE ? 0 : 1;
 }
+int arch_queue_impl::overwrite(void *item,  unsigned int timeout) {
+    if (m_pHandle == NULL)
+            return 2;
+
+    if (xPortInIsrContext())
+    {
+        BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
+        (void)xQueueOverwriteFromISR((QueueHandle_t)m_pHandle, item, &xHigherPriorityTaskWoken);
+
+        if (xHigherPriorityTaskWoken)
+            _frxt_setup_switch();
+    }
+    else
+    {
+        (void)xQueueOverwrite((QueueHandle_t)m_pHandle, item);
+    }
+    return 0;
+}
 int arch_queue_impl::dequeue(void *item, unsigned int timeout) {
     BaseType_t success;
 
