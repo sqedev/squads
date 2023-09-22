@@ -42,13 +42,13 @@ namespace squads {
          *  lock (take) a LokObject
          *  @param timeout How long to wait to get the Lock until giving up.
          */
-        virtual int lock(unsigned int timeout = 0) = 0;
+        virtual int lock(unsigned int timeout = 0) noexcept = 0;
 
-        virtual int time_lock(const struct timespec *timeout) = 0;
+        virtual int time_lock(const struct timespec *timeout) noexcept = 0;
         /**
          *  unlock (give) a semaphore.
          */
-        virtual int unlock() = 0;
+        virtual int unlock() noexcept = 0;
 
         /**
          * Try to lock the ILockObject
@@ -57,7 +57,7 @@ namespace squads {
          *
          * @return true if the Lock was acquired, false when not
          */
-        virtual bool try_lock() {
+        virtual bool try_lock() noexcept {
             return (lock(0) == 0);
         }
 
