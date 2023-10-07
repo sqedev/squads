@@ -19,6 +19,7 @@
 #include "config.hpp"
 #include "core/semaphore.hpp"
 
+
 namespace squads {
     basic_binary_semaphore::basic_binary_semaphore() : m_bLock(false) { }
     
@@ -28,7 +29,7 @@ namespace squads {
                 break;
             }
             while (m_bLock.load(atomic::memory_order::Relaxed)) {
-                squads::arch::yield();
+                squads::arch::arch_yield();
             }
         }
         return 0;

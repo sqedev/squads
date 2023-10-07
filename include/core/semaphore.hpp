@@ -61,33 +61,33 @@ namespace squads {
 
         constexpr size_t max_count() { return TMAXCOUNT; }
 
-        basic_counting_semaphore()  : m_bLock(), m_iCount(0) { }
+        basic_counting_semaphore()  :  m_iCount(0) { }
         basic_counting_semaphore (const self_type&) = delete;
         basic_counting_semaphore (const self_type&&) = delete;
 
         int lock(unsigned int timeout = 0) noexcept override {
              if(m_iCount >= TMAXCOUNT) return 1;
 
-            if(m_iLocks > 0) {
-                m_iLocks++; 
+            if(m_iCount > 0) {
+                m_iCount++; 
             } else if(m_refLockRefObject.lock(timeout) == 0) {
-                m_iLocks++;  }
+                m_iCount++;  }
 
             return 0;
 
         }
         bool try_lock() noexcept override { 
-            bool _ret = m_bLock.try_lock();
-            if(_ret ) m_iCount++; return _ret; 
+            if(m_refLockRefObject.try_lock() ) { m_iCount++; return true; } 
+            else return false; 
         }
 
         int time_lock(const struct timespec *timeout) noexcept { return 1; }
         int unlock() noexcept override {
             int lock_ret = 0;
 
-            if(m_iLocks > 0) {
-                m_iLocks--;
-                if(m_iLocks == 0) {
+            if(m_iCount > 0) {
+                m_iCount--;
+                if(m_iCount == 0) {
                     lock_ret = m_refLockRefObject.unlock();
                 }
             }
@@ -95,7 +95,7 @@ namespace squads {
         }
 
         bool is_initialized() const override { return true; }
-        bool is_locked() const override { return m_iLocks > 0;  }
+        bool is_locked() const override { return m_iCount > 0;  }
 
         size_t get_count () { return m_iCount; }
         size_t get_left() { return TMAXCOUNT - m_iCount; }
@@ -104,7 +104,7 @@ namespace squads {
         void operator = (const self_type&&) = delete;
     private:
         basic_binary_semaphore m_refLockRefObject;
-        atomic::atomic_size_t m_iLocks;
+        atomic::atomic_size_t m_iCount;
     };
 
     using binary_semaphore = basic_binary_semaphore;
