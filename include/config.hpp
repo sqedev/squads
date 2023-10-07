@@ -18,10 +18,12 @@
 #ifndef __SQUADS_CONFIG_H__
 #define __SQUADS_CONFIG_H__
 
-#define SQUADS_CONFIG_ARCH_FREERTOS 1
+//#define SQUADS_CONFIG_ARCH_FREERTOS 1
 
 #if SQUADS_CONFIG_ARCH_FREERTOS == 1
 #include "arch/freertos/config.hpp"
+#else
+#error "No platform set"
 #endif
 
 #define SQUADS_PORTMAX_DELAY                     SQUADS_ARCH_CONFIG_MAX_DELAY
