@@ -20,10 +20,10 @@
 
 #include "arch/arch_utils.hpp"
 
-#if 0
+
 #include "defines.hpp"
 #include "flags.hpp"
-
+#include "core/task.hpp"
 
 
 namespace squads {
@@ -31,12 +31,12 @@ namespace squads {
          template <class TTYPE, class TaskType>
         struct basic_wait_state {
             TTYPE m_waiters{0};
-            mutex_t m_locked;
+            mutex m_locked;
             TaskType m_convar;
             uint64_t m_version;
 
             // Get the wait state for a given address.
-            static basic_wait_state &for_address(volatile void *__address) noexcept {
+            static basic_wait_state &for_address( void *__address) noexcept {
                 constexpr uintptr_t count = 16;
                 static basic_wait_state w[count];
                 return w[(reinterpret_cast<uintptr_t>(__address) >> 2) % count];
@@ -56,7 +56,7 @@ namespace squads {
                 for (int i = 0; i < 10; i++) {
                     if (pred())
                         return;
-                    arch::yield();
+                    arch::arch_yield();
                 }
 
                 m_waiters.fetch_add(1, memory_order::SeqCst);
@@ -81,7 +81,5 @@ namespace squads {
         };
     }
 }
-
-#endif
 
 #endif

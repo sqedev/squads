@@ -57,9 +57,9 @@ namespace squads {
             using difference_type = typename base_type::difference_type;
             using self_type = basic_atomic_impl<value_type, TTASKTYPE>;
             
-            //using waitstate_type = basic_wait_state<basic_atomic_impl<uint64_t>, TTASKTYPE >;
-            //using notify_type = internal::notify_token<self_type, waitstate_type>;
-            //using vnotify_type = internal::notify_token<volatile self_type, waitstate_type>;
+            using waitstate_type = basic_wait_state<basic_atomic_impl<uint64_t, TTASKTYPE>, TTASKTYPE >;
+            using notify_type = internal::notify_token<self_type, waitstate_type>;
+            using vnotify_type = internal::notify_token<volatile self_type, waitstate_type>;
 
             basic_atomic_impl()  = default;
             ~basic_atomic_impl()  = default;
@@ -70,7 +70,7 @@ namespace squads {
 
             constexpr basic_atomic_impl(value_type value)  : base_type(value) { }
 
-#if 0
+
             void notify_one(unsigned int timeout) 
                 { get_notify_token().notify_one(timeout); }
 
@@ -106,7 +106,7 @@ namespace squads {
                 auto& s = waitstate_type::for_address(this);
                 s.wait(pred, timeout);
             }
-#endif
+
         };
     }
 }
