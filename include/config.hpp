@@ -157,6 +157,10 @@
     #define SQUADS_CONFIG_MINIMAL_STACK_SIZE		SQUADS_ARCH_CONFIG_MIN_STACK_DEPTH
 #endif
 
+#ifndef SQUADS_THREAD_NATIVE_HANDLE
+    #define SQUADS_THREAD_NATIVE_HANDLE      SQUADS_THREAD_CONFIG_NATIVE_HANDLE
+
+#endif
 //==================================
 // end task config
 

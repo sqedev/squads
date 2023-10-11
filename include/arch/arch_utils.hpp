@@ -72,8 +72,7 @@ namespace squads {
         void arch_delay(const unsigned long& ts);
 
 
-
-       
+        
 
     }
 }

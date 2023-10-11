@@ -20,6 +20,7 @@
 #define __SQUADS_ARCH_FREERTOS_H__
 
 #include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 /**
  * All cunfig properties can override in your sdkconfig.h
  */
@@ -34,6 +35,7 @@
 #define SQUADS_THREAD_CONFIG_SIZE_TYPE          long unsigned int
 #define SQUADS_THREAD_CONFIG_STACK_TYPE         unsigned long
 #define SQUADS_THREAD_CONFIG_BASIC_ALIGNMENT    sizeof(unsigned char*)
+#define SQUADS_THREAD_CONFIG_NATIVE_HANDLE      TaskHandle_t
 
 /// @brief The max number of usable cores
 #define SQUADS_THREAD_CONFIG_CORE_MAX   (portNUM_PROCESSORS - 1)

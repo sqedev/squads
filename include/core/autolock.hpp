@@ -97,6 +97,9 @@ namespace squads {
         LOCK &m_ref_lock;
     };
 
+    template <class LOCK>
+    using autolock = basic_autolock<LOCK>;
+
     /**
      *  This is a C++11 feature that allows basic_lock  
      *  Locking and unlocking to behave following an RAII style.
@@ -152,6 +155,9 @@ namespace squads {
          */
         unsigned long m_xTicksToWait;
     };
+
+    template <class LOCK>
+    using autounlock = basic_autounlock<LOCK>;
 }
 
 #endif
