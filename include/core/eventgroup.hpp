@@ -37,7 +37,7 @@ namespace squads {
     public:
         using this_type = eventgroup;
         using native_handle_type = void*;
-        using event_bit_type = int;
+        using event_bit_type = SQUADS_THREAD_CONFIG_TICK_TYPE;
         /**
          * @brief Consruct a new event group.
          *

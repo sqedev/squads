@@ -48,7 +48,7 @@ namespace squads  {
     //-----------------------------------
     eventgroup::~eventgroup() {
         if( is_init() ) {
-            vEventGroupDelete( (EventGroupHandle_t )  m_pHandle);
+            vEventGroupDelete(  (EventGroupHandle_t )m_pHandle);
         }
     }
 
@@ -58,7 +58,7 @@ namespace squads  {
     eventgroup::event_bit_type eventgroup::sync( const event_bit_type uxBitsToSet, const event_bit_type uxBitsToWaitFor, unsigned int xTicksToWait){
 
 		if( is_init() )
-			return xEventGroupSync( (EventGroupHandle_t ) m_pHandle, uxBitsToSet, uxBitsToWaitFor, xTicksToWait);
+			return xEventGroupSync(  (EventGroupHandle_t )m_pHandle, uxBitsToSet, uxBitsToWaitFor, xTicksToWait);
 		else {
 			ESP_LOGE(m_strName, "the event group handle is not created, call create first");
 			return portMAX_DELAY;
