@@ -1,6 +1,24 @@
+/*
+*This file is part of the SQUADS Library (https://github.com/eotpcomic/squads ).
+*Copyright (c) 2023 Amber-Sophia Schroeck
+*
+*The SQUADS Library is free software; you can redistribute it and/or modify
+*it under the terms of the GNU Lesser General Public License as published by
+*the Free Software Foundation, version 2.1, or (at your option) any later version.
+
+*The SQUADS Library is distributed in the hope that it will be useful, but
+*WITHOUT ANY WARRANTY; without even the implied warranty of
+*MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+*General Public License for more details.
+*
+*You should have received a copy of the GNU Lesser General Public
+*License along with the SQUADS  Library; if not, see
+*<https://www.gnu.org/licenses/>.
+*/
+
 #include "config.hpp"
 
-#if SQUADS_CONFIG_ARCH_ESP32 == 1
+#if SQUADS_CONFIG_ARCH_FREERTOS == 1
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 
@@ -114,12 +132,12 @@ int arch_queue_impl::peek(void *item, unsigned int timeout) {
     return success == pdTRUE ? 0 : 1;
 }
 
-bool arch_queue_impl::is_empty() {
+bool arch_queue_impl::is_empty() const {
     unsigned int cnt = get_num_items();
 
     return cnt == 0 ? true : false;
 }
-bool arch_queue_impl::is_full() {
+bool arch_queue_impl::is_full() const {
     unsigned int cnt = get_left();
 
     return cnt == 0 ? true : false;
@@ -131,12 +149,12 @@ int arch_queue_impl::clear() {
 }
 
 
-unsigned int arch_queue_impl::get_num_items() {
+unsigned int arch_queue_impl::get_num_items() const {
     return uxQueueMessagesWaiting((QueueHandle_t)m_pHandle);
 }
 
 
-unsigned int arch_queue_impl::get_left() {
+unsigned int arch_queue_impl::get_left() const {
     return uxQueueSpacesAvailable((QueueHandle_t)m_pHandle);
 }
 
