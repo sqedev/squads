@@ -45,7 +45,7 @@ int arch_queue_impl::destroy() {
     return 0;
 }
 
-int arch_queue_impl::enqueue_back(void *item, unsigned int timeout) {
+int arch_queue_impl::enqueue_back(const void *item, unsigned int timeout) {
     BaseType_t success;
 
     if(m_pHandle == NULL) return 99;
@@ -63,7 +63,7 @@ int arch_queue_impl::enqueue_back(void *item, unsigned int timeout) {
 
     return success == pdTRUE ? 0 : 1;
 }
-int arch_queue_impl::enqueue_front(void *item, unsigned int timeout) {
+int arch_queue_impl::enqueue_front(const void *item, unsigned int timeout) {
     BaseType_t success;
 
     if(m_pHandle == NULL) return 99;

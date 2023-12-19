@@ -27,43 +27,34 @@
 namespace squads {
     namespace arch {
         
-        class arch_mutex_impl : public basic_lock{
+        class arch_mutex_simple_impl : public basic_lock{
         public:
-            enum class mutex_type {
-                simple = 0,
-                recursive = 1
-            };
 
-            arch_mutex_impl(mutex_type type)
-                : m_pHandle(NULL), 
-                  m_tType(type), 
+            arch_mutex_simple_impl()
+                : m_pHandle(NULL),  
                   m_bLocked(false) { }
 
-            arch_mutex_impl(arch_mutex_impl& other) 
+            arch_mutex_simple_impl(arch_mutex_simple_impl& other) 
                 : m_pHandle(other.m_pHandle), 
-                  m_tType(other.m_tType), 
                   m_bLocked(other.m_bLocked) { }
 
-            arch_mutex_impl(arch_mutex_impl&& other) 
+            arch_mutex_simple_impl(arch_mutex_simple_impl&& other) 
                 : m_pHandle(squads::move(other.m_pHandle)), 
-                  m_tType(squads::move(other.m_tType)), 
                   m_bLocked(squads::move(other.m_bLocked)) { }
 
             
             /**
              * Create the arch mutex
              */ 
-            bool create();
-
-            bool create_static(void* pStaticBuffer);
+            virtual bool create();
 
             /**
              * Destroy the mutex
              */
             bool destroy();
 
-            bool take(unsigned int xt) noexcept;
-            bool give() noexcept;
+            virtual bool take(unsigned int xt) noexcept;
+            virtual bool give() noexcept;
 
             /**
              * Try to lock the ILockObject
@@ -92,30 +83,27 @@ namespace squads {
             template <typename TRET = void*>
             TRET get_handle() const { return (TRET*)m_pHandle; }
 
-            arch_mutex_impl* operator = (arch_mutex_impl& other) {
+            arch_mutex_simple_impl* operator = (arch_mutex_simple_impl& other) {
                 m_pHandle = other.m_pHandle;
-                m_tType = other.m_tType;
                 m_bLocked = other.m_bLocked;
                 return this;
             }
 
-            arch_mutex_impl* operator = (arch_mutex_impl&& other) {
+            arch_mutex_simple_impl* operator = (arch_mutex_simple_impl&& other) {
                 m_pHandle = squads::move(other.m_pHandle);
-                m_tType = squads::move(other.m_tType);
                 m_bLocked = squads::move(other.m_bLocked);
                 return this;
             }
 
-            bool operator == (arch_mutex_impl& other) {
+            bool operator == (arch_mutex_simple_impl& other) {
                 return (m_pHandle == other.m_pHandle);
             }
-            bool operator != (arch_mutex_impl& other) {
+            bool operator != (arch_mutex_simple_impl& other) {
                 return (m_pHandle != other.m_pHandle);
             }
 
-            void swap(arch_mutex_impl& other) noexcept {
+            void swap(arch_mutex_simple_impl& other) noexcept {
                 squads::swap(m_pHandle, other.m_pHandle);
-                squads::swap(m_tType, other.m_tType);
                 squads::swap(m_bLocked, other.m_bLocked);
             }
 
@@ -129,13 +117,33 @@ namespace squads {
             virtual int time_lock(const struct timespec *timeout) noexcept override {
                 return 1;
             }
-        private:
+        protected:
             void* m_pHandle;
-            mutex_type m_tType;
             bool m_bLocked;
         };
 
-        void swap(arch_mutex_impl& a, arch_mutex_impl& b) noexcept {
+        class arch_mutex_recursive_impl : public arch_mutex_simple_impl {
+        public:
+            arch_mutex_recursive_impl() : arch_mutex_simple_impl() { }
+
+            arch_mutex_recursive_impl(arch_mutex_recursive_impl& other) 
+                : arch_mutex_simple_impl(other) { }
+
+            arch_mutex_recursive_impl(arch_mutex_recursive_impl&& other) 
+                : arch_mutex_simple_impl(other) { }
+
+            
+            /**
+             * Create the arch mutex
+             */ 
+            bool create();
+            bool create_static(void* pStaticBuffer);
+
+            bool take(unsigned int xt) noexcept;
+            bool give() noexcept;
+        };
+
+        inline void swap(arch_mutex_simple_impl& a, arch_mutex_simple_impl& b) noexcept {
             a.swap(b);
         }
     };

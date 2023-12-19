@@ -29,43 +29,45 @@
 using namespace squads::arch;
 
 
-bool arch_mutex_impl::create() {
+bool arch_mutex_simple_impl::create() {
 
-    if(m_tType == mutex_type::simple) {
-        m_pHandle = xSemaphoreCreateMutex();
-    } else if (m_tType == mutex_type::recursive) {
-        m_pHandle = xSemaphoreCreateRecursiveMutex();
-           
-    }
+    m_pHandle = xSemaphoreCreateMutex();
+
     if (m_pHandle) {  give(); return true; }
     return false; 
 }
-bool arch_mutex_impl::create_static(void* pStaticBuffer) {
+bool arch_mutex_simple_impl::destroy() {
+    vSemaphoreDelete(m_pHandle);
+    return true;
+}
+bool arch_mutex_simple_impl::take(unsigned int timeout) {
+    return (xSemaphoreTake((QueueHandle_t)m_pHandle, timeout) == pdTRUE);
+}
+
+bool arch_mutex_simple_impl::give() {
+    return (xSemaphoreGive((QueueHandle_t)m_pHandle) == pdTRUE);  
+}
+
+bool arch_mutex_recursive_impl::create() {
+    m_pHandle = xSemaphoreCreateRecursiveMutex();
+
+    if (m_pHandle) {  give(); return true; }
+    return false; 
+}
+
+bool arch_mutex_recursive_impl::create_static(void* pStaticBuffer) {
     m_pHandle = xSemaphoreCreateRecursiveMutexStatic((StaticQueue_t *)pStaticBuffer);
 
     if (m_pHandle) {  give(); return true; }
     return false; 
 }
 
-bool arch_mutex_impl::take(unsigned int timeout) {
-
-    if(m_tType == mutex_type::simple) {
-        return (xSemaphoreTake((QueueHandle_t)m_pHandle, timeout) == pdTRUE);
-    } else if (m_tType == mutex_type::recursive) {
-        return (xSemaphoreTakeRecursive((QueueHandle_t)m_pHandle, timeout) == pdTRUE ); 
-    }
-    return false;
+bool arch_mutex_recursive_impl::take(unsigned int timeout) {
+    return (xSemaphoreTakeRecursive((QueueHandle_t)m_pHandle, timeout) == pdTRUE ); 
 }
 
-bool arch_mutex_impl::give() {
-
-    if(m_tType == mutex_type::simple) {
-        return (xSemaphoreGive((QueueHandle_t)m_pHandle) == pdTRUE);  
-    } else if (m_tType == mutex_type::recursive) {
-        return (xSemaphoreGiveRecursive((QueueHandle_t)m_pHandle) == pdTRUE);  
-    }
-    return false;
+bool arch_mutex_recursive_impl::give() {
+    return (xSemaphoreGiveRecursive((QueueHandle_t)m_pHandle) == pdTRUE);  
 }
-
 
 #endif

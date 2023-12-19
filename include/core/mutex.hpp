@@ -28,55 +28,9 @@
 
 namespace squads {
     class task;
-
-    namespace internal {
-        template <arch::arch_mutex_impl::mutex_type type>
-        class basic_mutex : public arch::arch_mutex_impl {
-        public:
-            using this_type = basic_mutex;
-            using base_type = arch::arch_mutex_impl;
-            using nativ_handle = void*;
-
-            basic_mutex() : arch::arch_mutex_impl(type) {
-                arch::arch_mutex_impl::create();
-            }
-            basic_mutex(const basic_mutex& other) : arch::arch_mutex_impl(other) {  }
-            basic_mutex(const basic_mutex&& other) : arch::arch_mutex_impl(other) {  }
-
-            /**
-             *  lock (take) a LokObject
-             *  @param timeout How long to wait to get the Lock until giving up.
-             */
-            virtual int lock(unsigned int timeout = 0) noexcept override {
-                return arch::arch_mutex_impl::take(timeout) ? 0 : 1;
-            }
-
-            virtual int time_lock(const struct timespec *timeout) noexcept override { return 0; }
-            /**
-             *  unlock (give) a semaphore.
-             */
-            virtual int unlock() noexcept override {
-                return arch::arch_mutex_impl::give() ? 0 : 1;
-            }
-
-            /**
-             * Try to lock the ILockObject
-             *
-             * @note call lock with timeout from 0
-             *
-             * @return true if the Lock was acquired, false when not
-             */
-            virtual bool try_lock() noexcept {
-                return arch::arch_mutex_impl::try_lock();
-            }
-
-        protected:
-            arch_mutex_impl m_pMutex;
-            
-        };
-    }
-    using mutex = internal::basic_mutex<arch::arch_mutex_impl::mutex_type::simple>;
-    using recursive_mutex = internal::basic_mutex<arch::arch_mutex_impl::mutex_type::recursive>;
+    
+    using mutex = arch::arch_mutex_simple_impl;
+    using recursive_mutex = arch::arch_mutex_recursive_impl;
 
     template<class TTASK = task, class TCONVAR = TTASK::convar_type>
     using timed_mutex = timed_lock<mutex, TTASK, TCONVAR>;

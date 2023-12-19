@@ -76,7 +76,7 @@ namespace squads {
              *  @return '0' the item was added, '1' on an error
              *          and '2' when the basic_queue not created
              */
-            int enqueue_back(void *item, unsigned int timeout = SQUADS_PORTMAX_DELAY);
+            int enqueue_back(const void *item, unsigned int timeout = SQUADS_PORTMAX_DELAY);
             /**
              *  Add an item to the front of the basic_queue.
              *
@@ -85,7 +85,7 @@ namespace squads {
              *  @return '0' the item was added, '1' on an error
              *          and '2' when the basic_queue not created
              */
-            int enqueue_front(void *item, unsigned int timeout = SQUADS_PORTMAX_DELAY);
+            int enqueue_front(const void *item, unsigned int timeout = SQUADS_PORTMAX_DELAY);
 
 
             /**
@@ -189,7 +189,7 @@ namespace squads {
 
         };
 
-        void swap(arch_queue_impl& a, arch_queue_impl& b) noexcept {
+        inline void swap(arch_queue_impl& a, arch_queue_impl& b) noexcept {
             a.swap(b);
         }
     }

@@ -56,8 +56,8 @@ namespace squads {
     public:
         using iterator_category = squads::forward_iterator_tag;
         using value_type = T;
-        using pointer = value_type*;
-        using reference = value_type&;
+        using pointer = T*;
+        using reference = T&;
         using difference_type = ptrdiff_t;
         
         using queue_type = TQUEUE;
@@ -149,11 +149,14 @@ namespace squads {
         }
         virtual ~basic_queue()  { m_aimplQueue.destroy(); }
 
-        virtual iterator        begin() 		{ return iterator( intern_getfront(), m_aimplQueue); }
+        /*virtual iterator        begin() 		{ 
+            m_aimplQueue.peek(m_pFront, SQUADS_PORTMAX_DELAY);
+            return basic_queue_iterator<T, self_type>( m_pFront, m_aimplQueue); 
+        }
         virtual const_iterator  begin() const 	{ return const_iterator( intern_getfront(), m_aimplQueue); }
 
         virtual iterator        end() 			{ return iterator(m_pEnd, &m_aimplQueue); }
-        virtual const_iterator  end() const 	{ return const_iterator(m_pEnd, &m_aimplQueue); }
+        virtual const_iterator  end() const 	{ return const_iterator(m_pEnd, &m_aimplQueue); }*/
 
 		virtual reference       front()         { assert(!empty()); return *intern_getfront(); }
 		virtual const_reference front() const   { assert(!empty()); return *intern_getfront(); }
@@ -164,7 +167,7 @@ namespace squads {
         bool            empty() const   { return m_aimplQueue.is_empty(); }
 		size_type       size() const    { return m_aimplQueue.get_num_items(); }
 
-		virtual bool    push(const value_type& value, unsigned int timeout = SQUADS_PORTMAX_DELAY) {
+		virtual bool    push(value_type& value, unsigned int timeout = SQUADS_PORTMAX_DELAY) {
              
             if( m_aimplQueue.enqueue_back(&value) == 0) {
                     m_pEnd = &value;
@@ -173,11 +176,8 @@ namespace squads {
             return false;
         }
 		virtual bool    push(value_type&& x, unsigned int timeout = SQUADS_PORTMAX_DELAY) {
-            if( m_aimplQueue.enqueue_back(squads::move(x)) == 0) {
-                    m_pEnd = &squads::move(x);
-                    return true;
-            }
-            return false;
+            return push(squads::move(x));
+
         }
 
 		bool            pop(value_type* value = NULL, unsigned int timeout = SQUADS_PORTMAX_DELAY) {
@@ -230,10 +230,11 @@ namespace squads {
             return *this;
         }
     private:
-        T* intern_getfront() {
-            m_aimplQueue.peek(m_pFront, SQUADS_PORTMAX_DELAY);
+        T* intern_getfront() const {
+            
             return m_pFront;
         }
+      
     protected:
         cointainer_type     m_aimplQueue;
         pointer             m_pEnd;
