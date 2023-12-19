@@ -24,6 +24,10 @@
 #include "queue.hpp"
 #include "mutex.hpp"
 #include "condition_variable.hpp"
+#include "eventgroup.hpp"
+
+#define EVENTGROUP_BIT_STARTED  1
+#define EVENTGROUP_BIT_JOINABLE	2
 
 namespace squads {
     /**
@@ -101,21 +105,7 @@ namespace squads {
             Deleted		    /*!< The task being queried has been deleted, but its TCB has not yet been freed. */
         };
 
-        /**
-        * The specific task message
-        */
-        struct message {
-            using message_id = int;
-
-            message_id id;              /*!< The message id */
-            void* _message;              /*!< The message*/
-
-
-            message(message_id _id, void* msg = nullptr)
-                : id(_id), _message(msg) { }
-        };
-
-        using message_id = typename message::message_id;
+        
         using this_type = task;
         using native_handle_type = SQUADS_THREAD_NATIVE_HANDLE;
         using convar_type = condition_variable;
@@ -141,28 +131,7 @@ namespace squads {
          */
         virtual ~task();
 
-        /**
-         * @brief Create and starts the Task.
-         *
-         * This is the API call that actually starts the Task running.
-         * It creates a backing FreeRTOS task. By separating object creation
-         * from starting the Task, it solves the pure virtual fuction call
-         * failure case. Call after creating the Task the function on_start
-         *
-         * @param uiCore If the value is MN_THREAD_CONFIG_CORE_IFNO, the created task is not
-         * pinned to any CPU, and the scheduler can run it on any core available.
-         * Other values indicate the index number of the CPU which the task should
-         * be pinned to. Specifying values larger than (portNUM_PROCESSORS - 1) will
-         * cause the function to fail.
-         *
-         * @return
-         *  - 0 The task are creating,
-         *  - 1 on error creating the using LockObjets, the task is not created.
-         *  - 2 the Task is allready running.
-         *  - 3 can't create the tas.
-         *	- 4 can't create the event group, the task is not created.
-        */
-        virtual int           start(int uiCore = SQUADS_CONFIG_DEFAULT_CORE);
+        int start(int iCore);
 
         /**
          * @brief Destroy and delete the task and call the function 'on_kill'
@@ -296,24 +265,7 @@ namespace squads {
         */
         int				  	wait(timespan_t time);
 
-        /**
-         * @brief Add a pre-created task message to the task queue
-         *
-         * @param[in] msg The specific message you are adding to the task queue
-         * @param timeout How long to wait to add the item to the queue
-         */
-        void post_msg(message* msg, unsigned int timeout = SQUADS_PORTMAX_DELAY);
-
-        /**
-         * @brief Create the task message and add the message to the task queue,
-         * without message data
-         *
-         * @param msg_id The message id
-         * @param timeout How long to wait to add the item to the queue
-         */
-        void post_msg(message_id msg_id, void* msg = nullptr, unsigned int timeout = SQUADS_PORTMAX_DELAY) {
-            post_msg(new message(msg_id, msg), timeout );
-        }
+        
 
         /**
          * @brief Get the state of the task
@@ -348,8 +300,7 @@ namespace squads {
          */
         static this_type* get_self();
     
-        bool have_message();
-        void get_message(message *msg, unsigned int timeOut = SQUADS_PORTMAX_DELAY);
+        
 
         /**
          *  @brief Operator to get the task's backing task handle.
@@ -408,13 +359,9 @@ namespace squads {
         bool operator > (const this_type &r) const {
             return m_pHandle > r.m_pHandle;
         }
-    protected:
-        /**
-         * @brief Adapter function that allows you to write a class
-         * specific on_task() function that interfaces with FreeRTOS.
-         */
+    
+    private:
         static void runtaskstub(void* parm);
-
     protected:
         mutable mutex m_runningMutex, m_contextMutext, m_continuemutex;
 
@@ -452,7 +399,7 @@ namespace squads {
          */
         native_handle_type m_pHandle;
 
-        //event_group_t m_eventGroup;
+        eventgroup m_eventGroup;
 
         /**
          *  How we wait and signal the thread when using condition variables.
@@ -460,11 +407,6 @@ namespace squads {
          *  condition between dropping the CvLock and waiting.
          */
         mutex m_waitSem;
-
-        mutex m_ltMessageQueueLock;
-        //squads::queue m_qeMessageQueue;
-        convar_type m_cvMessage;
-
     };
 }
 

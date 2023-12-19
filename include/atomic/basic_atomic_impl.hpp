@@ -93,14 +93,14 @@ namespace squads {
                 return notify_type{temp};
             }
 
-            void wait(T old, memory_order mo = memory_order::SeqCst, unsigned int timeout = SQUADS_THREAD_CONFIG_TIMEOUT_MUTEX_DEFAULT) const {
+            void wait(T old, memory_order mo = memory_order::SeqCst, unsigned int timeout = SQUADS_PORTMAX_DELAY) const {
                 
                 auto pred = [mo, old, this]() { return this->load(mo) != old; };
                 auto& s = waitstate_type::for_address(this);
                 s.wait(pred, timeout);
             }
 
-            void wait(T old, memory_order mo = memory_order::SeqCst, unsigned int timeout = SQUADS_THREAD_CONFIG_TIMEOUT_MUTEX_DEFAULT) const volatile {
+            void wait(T old, memory_order mo = memory_order::SeqCst, unsigned int timeout = SQUADS_PORTMAX_DELAY) const volatile {
                 
                 auto pred = [mo, old, this]() { return this->load(mo) != old; };
                 auto& s = waitstate_type::for_address(this);
