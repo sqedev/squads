@@ -22,7 +22,7 @@
 
 namespace squads {
 
-    class msg_task : task {
+    class msg_task : public task {
     public:
         /**
         * The specific task message
@@ -65,36 +65,28 @@ namespace squads {
          * @param[in] msg The specific message you are adding to the task queue
          * @param timeout How long to wait to add the item to the queue
          */
-        void post_msg(message* msg, unsigned int timeout = SQUADS_PORTMAX_DELAY);
+        void post_msg(message*  msg, unsigned int timeout = SQUADS_PORTMAX_DELAY);
 
-        /**
-         * @brief Create the task message and add the message to the task queue,
-         * without message data
-         *
-         * @param msg_id The message id
-         * @param timeout How long to wait to add the item to the queue
-         */
-        void post_msg(message_id msg_id, void* msg = nullptr, unsigned int timeout = SQUADS_PORTMAX_DELAY) {
-            post_msg(new message(msg_id, msg), timeout );
-        }
 
         bool have_message() {
             autolock<mutex> lock(m_ltMessageQueueLock);
             return !(m_qeMessageQueue.is_empty());
         }
-        bool get_message(message *msg, unsigned int timeOut = SQUADS_PORTMAX_DELAY) {
+        bool get_message(message *msg, unsigned int popTimeOut = SQUADS_PORTMAX_DELAY, unsigned int waitTimeOut = SQUADS_PORTMAX_DELAY) {
             autolock<mutex> lock(m_ltMessageQueueLock);
-            if(m_qeMessageQueue.is_empty()) return false;
 
-            return m_qeMessageQueue.pop(msg, m_waitMaxPop);
+            while (m_qeMessageQueue.is_empty())
+                wait(m_cvMessage, m_ltMessageQueueLock, waitTimeOut);
+
+            if(!m_qeMessageQueue.is_empty()) {
+                return m_qeMessageQueue.pop(&msg, popTimeOut);
+            }
+            return false;
         }
-    protected:
-        int             on_task() override;
-        virtual void    on_message(message_id msg_id, void* msg = nullptr) = 0;
     private:
-        mutex m_ltMessageQueueLock;
-        convar_type m_cvMessage;
-        queue<message> m_qeMessageQueue;
+        mutex          m_ltMessageQueueLock;
+        convar_type    m_cvMessage;
+        queue<message*> m_qeMessageQueue;
         uint32_t       m_waitMaxPop;
     };
 }
