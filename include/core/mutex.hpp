@@ -30,39 +30,25 @@ namespace squads {
     class task;
 
     namespace internal {
-        template <arch::mutex_type type>
-        class basic_mutex : public basic_lock {
+        template <arch::arch_mutex_impl::mutex_type type>
+        class basic_mutex : public arch::arch_mutex_impl {
         public:
             using this_type = basic_mutex;
-            using base_type = basic_lock;
+            using base_type = arch::arch_mutex_impl;
             using nativ_handle = void*;
 
-            basic_mutex() : m_pMutex(nullptr), m_isLocked(false) {
-
-                m_pMutex = arch::arch_create_mutex(type);
-
-                if (m_pMutex) {
-                    m_isLocked = true;
-                    unlock();
-                }
+            basic_mutex() : arch::arch_mutex_impl(type) {
+                arch::arch_mutex_impl::create();
             }
-            basic_mutex(const basic_mutex& other)
-                : m_pMutex(other.m_pMutex), m_isLocked(other.m_isLocked) {  }
-            basic_mutex(const basic_mutex&& other)
-                : m_pMutex(squads::move(other.m_pMutex)), m_isLocked( squads::move(other.m_isLocked))  { }
-            ~basic_mutex() { arch::arch_delete_mutex(m_pMutex); }
+            basic_mutex(const basic_mutex& other) : arch::arch_mutex_impl(other) {  }
+            basic_mutex(const basic_mutex&& other) : arch::arch_mutex_impl(other) {  }
 
             /**
              *  lock (take) a LokObject
              *  @param timeout How long to wait to get the Lock until giving up.
              */
             virtual int lock(unsigned int timeout = 0) noexcept override {
-                if(arch::arch_take_mutex(m_pMutex, timeout, type) == 0) {
-                    m_isLocked = true;
-                    return 0;
-                } else {
-                    return 1;
-                }
+                return arch::arch_mutex_impl::take(timeout) ? 0 : 1;
             }
 
             virtual int time_lock(const struct timespec *timeout) noexcept override { return 0; }
@@ -70,12 +56,7 @@ namespace squads {
              *  unlock (give) a semaphore.
              */
             virtual int unlock() noexcept override {
-                if(arch::arch_give_mutex(m_pMutex, type) == 0) {
-                    m_isLocked = true;
-                    return 0;
-                } else {
-                    return 1;
-                }
+                return arch::arch_mutex_impl::give() ? 0 : 1;
             }
 
             /**
@@ -86,29 +67,16 @@ namespace squads {
              * @return true if the Lock was acquired, false when not
              */
             virtual bool try_lock() noexcept {
-                return (lock(0) == 0);
+                return arch::arch_mutex_impl::try_lock();
             }
 
-            /**
-             * Is the ILockObject created (initialized) ?
-             *
-             * @return true if the ILockObject created (initialized) and false when not
-             */
-            virtual bool is_initialized() const { return m_pMutex != nullptr; };
-
-            /**
-             * @brief Is locked?
-             * @return True if locked and false when not.
-             */
-            virtual bool is_locked() const { return m_isLocked; };
-
         protected:
-            nativ_handle m_pMutex;
-            bool m_isLocked;
+            arch_mutex_impl m_pMutex;
+            
         };
     }
-    using mutex = internal::basic_mutex<arch::mutex_type::simple>;
-    using recursive_mutex = internal::basic_mutex<arch::mutex_type::recursive>;
+    using mutex = internal::basic_mutex<arch::arch_mutex_impl::mutex_type::simple>;
+    using recursive_mutex = internal::basic_mutex<arch::arch_mutex_impl::mutex_type::recursive>;
 
     template<class TTASK = task, class TCONVAR = TTASK::convar_type>
     using timed_mutex = timed_lock<mutex, TTASK, TCONVAR>;
@@ -131,12 +99,12 @@ namespace squads {
         using mutex_type = Mutex;
 
         explicit lock_guard(mutex_type& m) : m_ref_lock(m) {
-            assert( (m_ref_lock.lock(SQUADS_PORTMAX_DELAY) != NO_ERROR) );
+            assert( (m_ref_lock.lock(SQUADS_PORTMAX_DELAY) != 0) );
         }
 
         lock_guard(mutex_type &m, unsigned long xTicksToWait)
             : m_ref_lock(m) {
-            assert( (m_ref_lock.lock(xTicksToWait) != NO_ERROR) );
+            assert( (m_ref_lock.lock(xTicksToWait) != 0) );
         }
 
         lock_guard(mutex_type& m, adopt_lock_t) : lock_guard(m) { }
@@ -192,10 +160,12 @@ namespace squads {
             m_owns = true;
         }
         bool try_lock() {
-            if (m_mut == nullptr) return;
-            if (m_owns) return;
+            if (m_mut == nullptr) return false;
+            if (m_owns) return false;
 
             m_owns = m_mut->lock(0) == 0;
+
+            return m_owns;
         }
 
         /*template <class Rep, class Period>
@@ -214,14 +184,14 @@ namespace squads {
         }*/
 
         void unlock() {
-            if (!__owns_) return;
+            if (!m_owns) return;
             m_mut->unlock();
             m_owns = false;
         }
 
         void swap(unique_lock& u) noexcept {
-            mn::swap(m_mut, u.m_mut);
-            mn::swap(m_owns, u.m_owns);
+            squads::swap(m_mut, u.m_mut);
+            squads::swap(m_owns, u.m_owns);
         }
         mutex_type* release() noexcept {
             mutex_type* _mut = m_mut;
