@@ -74,7 +74,7 @@ namespace squads {
             broadcast();
         }
 
-        int wait(squads::mutex& mx, unsigned int timeOut);
+        int wait(mutex& mx, unsigned int timeOut);
     private:
         /**
          *  Internal helper function to queue a task to
