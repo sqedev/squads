@@ -47,10 +47,10 @@ namespace squads {
          * @param task The current canvar Task
          * @param Timeout How long to wait to get the Lock until giving up. (default = 0xffffffffUL)
          */
-        void lock(task_type& task, unsigned int timeout = SQUADS_PORTMAX_DELAY) {
+        void lock(task_type& task, lock_type& mutex, unsigned int timeout = SQUADS_PORTMAX_DELAY) {
             autolock<TLOCK> lock(m_lockObject);
             while (m_bLocked) {
-                task.wait(m_cv, m_mutex, timeout);
+                task.wait(m_cv, mutex, timeout);
             }
             m_bLocked = true;
         }
@@ -68,7 +68,7 @@ namespace squads {
     protected:
             convar_type m_cv;
             lock_type   m_lockObject;
-            bool        m_bLocked
+            bool        m_bLocked;
     };
 }
 
