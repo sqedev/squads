@@ -20,6 +20,8 @@
 
 #include "config.hpp"
 #include "defines.hpp"
+#include "core/algorithm.hpp"
+#include "core/functional.hpp"
 
 namespace squads {
     namespace arch {
@@ -38,6 +40,12 @@ namespace squads {
             arch_queue_impl(const arch_queue_impl& other) 
                 : m_pHandle(other.m_pHandle), m_imaxItems(other.m_imaxItems), 
                   m_iitemSize(other.m_iitemSize) {  }
+
+            arch_queue_impl(const arch_queue_impl&& other) 
+                : m_pHandle(squads::move(other.m_pHandle)), m_imaxItems(squads::move(other.m_imaxItems)), 
+                  m_iitemSize(squads::move(other.m_iitemSize)) {  }
+            
+
             /**
              *  dtor
              */
@@ -119,31 +127,57 @@ namespace squads {
              *  How many items are currently in the basic_queue.
              *  @return the number of items in the basic_queue.
              */
-            unsigned int get_num_items();
+            unsigned int get_num_items() const;
 
             /**
              *  How many empty spaves are currently left in the basic_queue.
              *  @return the number of remaining spaces.
              */
-            unsigned int get_left();
+            unsigned int get_left() const;
 
-            /**
-             *  get the Arch basic_queue handle
-             *  @return the Arch handle
-             */
-            void*  get_handle() { return m_pHandle; }
 
-            bool   is_created() { return m_pHandle != NULL; }
+            bool   is_created() const { return m_pHandle != NULL; }
 
             /**
              *  Is the basic_queue empty?
              *  @return true the basic_queue is empty and false when not
              */
-            bool is_empty();
+            bool is_empty() const;
             /**
              *  Is the basic_queue full?
              */
-            bool is_full();
+            bool is_full() const;
+
+            template <typename TRET = void*> 
+            TRET get_handle() const noexcept { return (TRET*)m_pHandle; }
+
+            void swap(arch_queue_impl& other) noexcept {
+                squads::swap(m_pHandle, other.m_pHandle);
+                squads::swap(m_imaxItems, other.m_imaxItems);
+                squads::swap(m_iitemSize, other.m_iitemSize);
+            }
+
+            arch_queue_impl* operator = (arch_queue_impl& other) {
+                m_pHandle = other.m_pHandle;
+                m_imaxItems = other.m_imaxItems;
+                m_iitemSize = other.m_iitemSize;
+                return this;
+            }
+
+            arch_queue_impl* operator = (arch_queue_impl&& other) {
+                m_pHandle = squads::move(other.m_pHandle);
+                m_imaxItems = squads::move(other.m_imaxItems);
+                m_iitemSize = squads::move(other.m_iitemSize);
+                return this;
+            }
+
+            bool operator == (arch_queue_impl& other) {
+                return (m_pHandle == other.m_pHandle);
+            }
+            bool operator != (arch_queue_impl& other) {
+                return (m_pHandle != other.m_pHandle);
+            }
+
         private:
             /**
              *  Arch basic_queue handle.
@@ -154,6 +188,10 @@ namespace squads {
             unsigned int m_iitemSize;
 
         };
+
+        void swap(arch_queue_impl& a, arch_queue_impl& b) noexcept {
+            a.swap(b);
+        }
     }
 }
 

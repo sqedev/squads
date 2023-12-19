@@ -20,29 +20,126 @@
 
 #include "config.hpp"
 #include "defines.hpp"
-
-
-
-
-SQUADS_EXTERNC_BEGINN
+#include "core/algorithm.hpp"
+#include "core/functional.hpp"
+#include "core/basic_lock.hpp"
 
 namespace squads {
     namespace arch {
+        
+        class arch_mutex_impl : public basic_lock{
+        public:
+            enum class mutex_type {
+                simple = 0,
+                recursive = 1
+            };
 
+            arch_mutex_impl(mutex_type type)
+                : m_pHandle(NULL), 
+                  m_tType(type), 
+                  m_bLocked(false) { }
 
-        enum class mutex_type {
-            simple = 0,
-            recursive = 1
+            arch_mutex_impl(arch_mutex_impl& other) 
+                : m_pHandle(other.m_pHandle), 
+                  m_tType(other.m_tType), 
+                  m_bLocked(other.m_bLocked) { }
+
+            arch_mutex_impl(arch_mutex_impl&& other) 
+                : m_pHandle(squads::move(other.m_pHandle)), 
+                  m_tType(squads::move(other.m_tType)), 
+                  m_bLocked(squads::move(other.m_bLocked)) { }
+
+            
+            /**
+             * Create the arch mutex
+             */ 
+            bool create();
+
+            bool create_static(void* pStaticBuffer);
+
+            /**
+             * Destroy the mutex
+             */
+            bool destroy();
+
+            bool take(unsigned int xt) noexcept;
+            bool give() noexcept;
+
+            /**
+             * Try to lock the ILockObject
+             *
+             * @note call lock with timeout from 0
+             *
+             * @return true if the Lock was acquired, false when not
+             */
+            bool try_lock() noexcept {
+                return (take(0) == 0);
+            }
+
+            /**
+             * Is the ILockObject created (initialized) ?
+             *
+             * @return true if the ILockObject created (initialized) and false when not
+             */
+            bool is_initialized() const { return m_pHandle != NULL; };
+
+            /**
+             * @brief Is locked?
+             * @return True if locked and false when not.
+             */
+            bool is_locked() const { return m_bLocked; };
+
+            template <typename TRET = void*>
+            TRET get_handle() const { return (TRET*)m_pHandle; }
+
+            arch_mutex_impl* operator = (arch_mutex_impl& other) {
+                m_pHandle = other.m_pHandle;
+                m_tType = other.m_tType;
+                m_bLocked = other.m_bLocked;
+                return this;
+            }
+
+            arch_mutex_impl* operator = (arch_mutex_impl&& other) {
+                m_pHandle = squads::move(other.m_pHandle);
+                m_tType = squads::move(other.m_tType);
+                m_bLocked = squads::move(other.m_bLocked);
+                return this;
+            }
+
+            bool operator == (arch_mutex_impl& other) {
+                return (m_pHandle == other.m_pHandle);
+            }
+            bool operator != (arch_mutex_impl& other) {
+                return (m_pHandle != other.m_pHandle);
+            }
+
+            void swap(arch_mutex_impl& other) noexcept {
+                squads::swap(m_pHandle, other.m_pHandle);
+                squads::swap(m_tType, other.m_tType);
+                squads::swap(m_bLocked, other.m_bLocked);
+            }
+
+        public:
+            virtual int lock(unsigned int timeout = 0) noexcept override { 
+                return take(timeout) ? 0 : 1;
+            }
+            virtual int unlock() noexcept override {
+                return give() ? 0 : 1;
+            }
+            virtual int time_lock(const struct timespec *timeout) noexcept override {
+                return 1;
+            }
+        private:
+            void* m_pHandle;
+            mutex_type m_tType;
+            bool m_bLocked;
         };
-       void* arch_create_mutex(mutex_type type);
-       void arch_delete_mutex(void* m, mutex_type type);
 
-       int arch_take_mutex(void* m, unsigned int xt, mutex_type type);
-       int arch_give_mutex(void* m, mutex_type type);
-
-    }
+        void swap(arch_mutex_impl& a, arch_mutex_impl& b) noexcept {
+            a.swap(b);
+        }
+    };
 }
 
-SQUADS_EXTERNC_END
 
 #endif
