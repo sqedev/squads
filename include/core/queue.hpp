@@ -65,14 +65,14 @@ namespace squads {
         using pointer_queue = TQUEUE*;
 
         explicit basic_queue_iterator(pointer_queue _pQueue, bool isEnd = false) 
-            : m_pValue(NULL), m_pQueue(_pQueue), m_bIsEnd(isEnd) { }
+            : m_pValue(NULL), m_pQueue(_pQueue) { }
 
         explicit basic_queue_iterator(pointer value, pointer_queue _pQueue, bool isEnd = false) 
-            : m_pValue(value), m_pQueue(_pQueue), m_bIsEnd(isEnd) { }
+            : m_pValue(value), m_pQueue(_pQueue) { }
 
         template<class U, class UQUEUE> 
         basic_queue_iterator(const basic_queue_iterator<U, UQUEUE>& rhs)
-            : m_pValue(rhs.m_pValue), m_pQueue(rhs._pQueue), m_bIsEnd(rhs.isEnd) { }
+            : m_pValue(rhs.m_pValue), m_pQueue(rhs._pQueue) { }
 
         pointer get() const { return m_pValue; }
 
@@ -117,27 +117,28 @@ namespace squads {
         using size_type = squads::size_t;
         using iterator = basic_queue_iterator<T, self_type>;
         using const_iterator = const iterator;
-        using cointainer_type = internal::arch_queue_impl;
+        using cointainer_type = arch::arch_queue_impl;
 
         static const size_type TypeSize = sizeof(value_type);
 
                     
 		explicit basic_queue() 
-        : m_archQueueType(maxItems, sizeof(value_type) ) {
-            m_archQueueType.create();
+        : m_aimplQueue(maxItems, sizeof(value_type) ) {
+            m_aimplQueue.create();
         }    
 
 		basic_queue(const self_type& x ) 
-            : m_archQueueType(other.m_archQueueType), 
-              m_pEnd(other.m_pEnd), 
-              m_pFront(other.m_pFront) { }
+            : m_aimplQueue(x.m_aimplQueue), 
+              m_pEnd(x.m_pEnd), 
+              m_pFront(x.m_pFront) { }
+
 		basic_queue(self_type&& x ) 
-            : m_archQueueType(squads::move(x.m_archQueueType))
-              m_pEnd(squads::move(other.m_pEnd)), 
-              m_pFront(squads::move(other.m_pFront)) { }
+            : m_aimplQueue(squads::move(x.m_aimplQueue)),
+              m_pEnd(squads::move(x.m_pEnd)), 
+              m_pFront(squads::move(x.m_pFront)) { }
 
 		basic_queue(initializer_list<value_type> ilist) {
-            if(m_archQueueType.create() == 0) {
+            if(m_aimplQueue.create() == 0) {
 
                 for(typename squads::initializer_list<value_type>::iterator it = ilist.begin(); it != ilist.end(); ++it) {
                     const value_type& value = *it;
@@ -146,13 +147,13 @@ namespace squads {
 
             }
         }
-        virtual ~basic_queue()  { m_archQueueType.destroy(); }
+        virtual ~basic_queue()  { m_aimplQueue.destroy(); }
 
-        virtual iterator        begin() 		{ return iterator( intern_getfront(), m_archQueueType); }
-        virtual const_iterator  begin() const 	{ return const_iterator( intern_getfront(), m_archQueueType); }
+        virtual iterator        begin() 		{ return iterator( intern_getfront(), m_aimplQueue); }
+        virtual const_iterator  begin() const 	{ return const_iterator( intern_getfront(), m_aimplQueue); }
 
-        virtual iterator        end() 			{ return iterator(m_pEnd, &m_archQueueType); }
-        virtual const_iterator  end() const 	{ return const_iterator(m_pEnd, &m_archQueueType); }
+        virtual iterator        end() 			{ return iterator(m_pEnd, &m_aimplQueue); }
+        virtual const_iterator  end() const 	{ return const_iterator(m_pEnd, &m_aimplQueue); }
 
 		virtual reference       front()         { assert(!empty()); return *intern_getfront(); }
 		virtual const_reference front() const   { assert(!empty()); return *intern_getfront(); }
@@ -160,19 +161,19 @@ namespace squads {
 		virtual reference       back()          { assert(!empty()); return *m_pEnd; }
 		virtual const_reference back() const    { assert(!empty()); return *m_pEnd; }
 
-        bool            empty() const   { return m_archQueueType.is_empty(); }
-		size_type       size() const    { return m_archQueueType.get_num_items(); }
+        bool            empty() const   { return m_aimplQueue.is_empty(); }
+		size_type       size() const    { return m_aimplQueue.get_num_items(); }
 
 		virtual bool    push(const value_type& value, unsigned int timeout = SQUADS_PORTMAX_DELAY) {
              
-            if( m_archQueueType.enqueue_back(&value) == 0) {
+            if( m_aimplQueue.enqueue_back(&value) == 0) {
                     m_pEnd = &value;
                     return true;
             }
             return false;
         }
 		virtual bool    push(value_type&& x, unsigned int timeout = SQUADS_PORTMAX_DELAY) {
-            if( m_archQueueType.enqueue_back(squads::move(x)) == 0) {
+            if( m_aimplQueue.enqueue_back(squads::move(x)) == 0) {
                     m_pEnd = &squads::move(x);
                     return true;
             }
@@ -180,14 +181,14 @@ namespace squads {
         }
 
 		bool            pop(value_type* value = NULL, unsigned int timeout = SQUADS_PORTMAX_DELAY) {
-           return m_archQueueType.dequeue(value, timeout) == 0;
+           return m_aimplQueue.dequeue(value, timeout) == 0;
 
         }
         /**
          * @brief Clear the queue
          */
         void            clear() {
-            m_archQueueType.clear();
+            m_aimplQueue.clear();
         }
 
         /**
@@ -195,37 +196,46 @@ namespace squads {
          *  @return the number of remaining spaces.
          */
         size_type       left()  {
-            return m_archQueueType.get_left();
+            return m_aimplQueue.get_left();
         }
 
+        bool is_empty() {
+            return m_aimplQueue.is_empty();
+        }
+        bool is_full() {
+            return m_aimplQueue.is_full();
+        }
 
 		void            swap(self_type& x) {
-            squads::swap(m_archQueueType, x.m_archQueueType);
+            m_aimplQueue.swap(x.m_aimplQueue);
         }
 
-        bool            equel(const self_type& o) {
-            return (m_archQueueType.get_handle() == o.m_archQueueType.get_handel());
+        bool            equel(const self_type& o) const {
+            void* ah = m_aimplQueue.get_handle();
+            void* bh = o.m_aimplQueue.get_handle();
+
+            return ah == bh;
         }
 
         self_type& operator = (const self_type& other) {
-            m_archQueueType = other.m_archQueueType;
+            m_aimplQueue = other.m_aimplQueue;
             m_pEnd = other.m_pEnd;
             m_pFront = other.m_pFront;
             return *this;
         }
         self_type& operator = (const self_type&& other) {
-            m_archQueueType = squads::move(other.m_archQueueType);
+            m_aimplQueue = squads::move(other.m_aimplQueue);
             m_pEnd = squads::move(other.m_pEnd);
             m_pFront = squads::move(other.m_pFront);
             return *this;
         }
     private:
         T* intern_getfront() {
-            m_archQueueType.peek(m_pFront, SQUADS_PORTMAX_DELAY);
+            m_aimplQueue.peek(m_pFront, SQUADS_PORTMAX_DELAY);
             return m_pFront;
         }
     protected:
-        cointainer_type     m_archQueueType;
+        cointainer_type     m_aimplQueue;
         pointer             m_pEnd;
         pointer             m_pFront;
     };
