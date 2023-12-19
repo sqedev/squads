@@ -356,7 +356,7 @@ namespace squads {
             autolock<mutex> autolock(m_runningMutex);
             m_waitSem.unlock();
 
-            xTaskNotifyGive( (TaskHandle_t) m_pHandle);
+            notify_give( this );
 
             on_signal();
         }
@@ -373,9 +373,70 @@ namespace squads {
             int ret = m_waitSem.lock(timeOut);
             cvl.lock();
 
-           ulTaskNotifyTake( pdTRUE, timeOut);
+            notify_take( true, timeOut);
 
             return ret;
+        }
+        bool task::notify(task* task, uint32_t ulValue, int action) {
+            BaseType_t success;
+
+            if (xPortInIsrContext()) {
+                BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
+                success = xTaskNotifyFromISR( task->get_handle(), ulValue, (eNotifyAction)action, &xHigherPriorityTaskWoken );
+
+                if(xHigherPriorityTaskWoken)
+                    _frxt_setup_switch();
+
+            } else {
+                success = xTaskNotify( task->get_handle(), ulValue, (eNotifyAction)action );
+            }
+
+            return success == pdTRUE;
+        }
+        bool task::notify_give(task* task) {
+            void* handler = (task != 0) ? task->get_handle() : xTaskGetCurrentTaskHandle();
+
+            BaseType_t success = pdTRUE;
+
+            if (xPortInIsrContext()) {
+                BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
+                vTaskNotifyGiveFromISR( (TaskHandle_t)handler, &xHigherPriorityTaskWoken );
+
+                if(xHigherPriorityTaskWoken)
+                    _frxt_setup_switch();
+
+            } else {
+                success = xTaskNotifyGive( (TaskHandle_t)handler );
+            }
+
+            return success == pdTRUE;
+            
+        }
+        uint32_t task::notify_take(bool bClearCountOnExit, unsigned int xTicksToWait) {
+            return ulTaskNotifyTake( bClearCountOnExit ? pdTRUE : pdFALSE, xTicksToWait );
+        }
+        bool task::notify_wait(uint32_t ulBitsToClearOnEntry, uint32_t ulBitsToClearOnExit, uint32_t *pulNotificationValue, unsigned int xTicksToWait ) {
+            return xTaskNotifyWait( ulBitsToClearOnEntry, ulBitsToClearOnExit,
+                                pulNotificationValue, xTicksToWait ) == pdTRUE;
+        }
+        void task::set_storage_pointer(task* task, unsigned short index, void* value) {
+            #if( configNUM_THREAD_LOCAL_STORAGE_POINTERS > 0 )
+
+            void* handler = (task != 0) ? task->get_handle() : xTaskGetCurrentTaskHandle();
+            vTaskSetThreadLocalStoragePointer( (TaskHandle_t) handler, index, value );
+
+            #endif
+        }
+        void* task::get_storage_pointer(task* task, unsigned short index) {
+            #if( configNUM_THREAD_LOCAL_STORAGE_POINTERS > 0 )
+            TaskHandle_t handler = (task != 0) ? task->get_handle() : xTaskGetCurrentTaskHandle();
+            return pvTaskGetThreadLocalStoragePointer(handler, index);
+
+            #else 
+            return NULL;
+            #endif
         }
 
 }

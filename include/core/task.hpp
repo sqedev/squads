@@ -312,6 +312,14 @@ namespace squads {
          * @return The ID assigned to the task being queried.
          */
         operator int () { return get_id(); }
+    public:
+        static bool notify(task* task, uint32_t ulValue, int action);
+        static bool notify_give(task* task);
+        static uint32_t notify_take(bool bClearCountOnExit, unsigned int xTicksToWait = SQUADS_PORTMAX_DELAY);
+        static bool notify_wait(uint32_t ulBitsToClearOnEntry, uint32_t ulBitsToClearOnExit, uint32_t *pulNotificationValue, 
+            unsigned int xTicksToWait = SQUADS_PORTMAX_DELAY);
+        static void set_storage_pointer(task* task, unsigned short index, void* value);
+        static void* get_storage_pointer(task* task, unsigned short index);
 
     protected:
         /**
@@ -407,7 +415,12 @@ namespace squads {
          *  condition between dropping the CvLock and waiting.
          */
         mutex m_waitSem;
+    
     };
+
+    
+    
+    
 }
 
 #endif
