@@ -23,11 +23,7 @@
 #include "defines.hpp"
 #include "basic_atomic_impl.hpp"
 #include "flags.hpp"
-
-
-#ifndef __IMPL_ATOMIC_TASK_TYPE
-#define __IMPL_ATOMIC_TASK_TYPE void
-#endif
+#include "core/task.hpp"
 
 
 namespace squads {
@@ -35,7 +31,7 @@ namespace squads {
         /**
          * @brief Only for declar special version for types
          */
-        template <typename T, class TTASKTYPE = __IMPL_ATOMIC_TASK_TYPE>
+        template <typename T, class TTASKTYPE = squads::task>
         struct _atomic : basic_atomic_impl<T, TTASKTYPE> {
             using base_type = basic_atomic_impl<T, TTASKTYPE>;
             using self_type = _atomic<T, TTASKTYPE>;
@@ -47,10 +43,10 @@ namespace squads {
          * @brief Special version for bool
          */
         template <>
-        struct _atomic<bool, __IMPL_ATOMIC_TASK_TYPE> : basic_atomic_impl<bool, __IMPL_ATOMIC_TASK_TYPE>  {
+        struct _atomic<bool, squads::task> : basic_atomic_impl<bool, squads::task>  {
             static constexpr bool is_always_lock_free  = ATOMIC_BOOL_LOCK_FREE == 2;
 
-            using base_type = basic_atomic_impl<bool, __IMPL_ATOMIC_TASK_TYPE> ;
+            using base_type = basic_atomic_impl<bool, squads::task> ;
             using self_type = typename base_type::self_type;
             using value_type = typename base_type::value_type;
             using difference_type = typename base_type::difference_type;;
@@ -69,10 +65,10 @@ namespace squads {
          * @brief Special version for char
          */
         template<>
-        struct _atomic<char, __IMPL_ATOMIC_TASK_TYPE> : basic_atomic_impl<char, __IMPL_ATOMIC_TASK_TYPE>  {
+        struct _atomic<char, squads::task> : basic_atomic_impl<char, squads::task>  {
             static constexpr bool is_always_lock_free  = ATOMIC_CHAR_LOCK_FREE == 2;
 
-            using base_type = basic_atomic_impl<char,__IMPL_ATOMIC_TASK_TYPE> ;
+            using base_type = basic_atomic_impl<char,squads::task> ;
             using self_type = typename base_type::self_type;
             using value_type = typename base_type::value_type;
             using difference_type = typename base_type::difference_type;;
@@ -91,10 +87,10 @@ namespace squads {
          * @brief Special version for signed char
          */
         template<>
-        struct _atomic<signed char, __IMPL_ATOMIC_TASK_TYPE> : basic_atomic_impl<signed char, __IMPL_ATOMIC_TASK_TYPE>  {
+        struct _atomic<signed char, squads::task> : basic_atomic_impl<signed char, squads::task>  {
             static constexpr bool is_always_lock_free  = ATOMIC_CHAR_LOCK_FREE == 2;
 
-            using base_type = basic_atomic_impl<signed char, __IMPL_ATOMIC_TASK_TYPE> ;
+            using base_type = basic_atomic_impl<signed char, squads::task> ;
             using self_type = typename base_type::self_type;
             using value_type = typename base_type::value_type;
             using difference_type = typename base_type::difference_type;;
@@ -113,10 +109,10 @@ namespace squads {
          * @brief Special version for short
          */
         template<>
-        struct _atomic<short, __IMPL_ATOMIC_TASK_TYPE> : basic_atomic_impl<short, __IMPL_ATOMIC_TASK_TYPE>  {
+        struct _atomic<short, squads::task> : basic_atomic_impl<short, squads::task>  {
             static constexpr bool is_always_lock_free  = ATOMIC_SHORT_LOCK_FREE == 2;
 
-            using base_type = basic_atomic_impl<short, __IMPL_ATOMIC_TASK_TYPE> ;
+            using base_type = basic_atomic_impl<short, squads::task> ;
             using self_type = typename base_type::self_type;
             using value_type = typename base_type::value_type;
             using difference_type = typename base_type::difference_type;;
@@ -135,10 +131,10 @@ namespace squads {
          * @brief Special version for int
          */
         template<>
-        struct _atomic<int, __IMPL_ATOMIC_TASK_TYPE> : basic_atomic_impl<int, __IMPL_ATOMIC_TASK_TYPE>  {
+        struct _atomic<int, squads::task> : basic_atomic_impl<int, squads::task>  {
             static constexpr bool is_always_lock_free  = ATOMIC_INT_LOCK_FREE == 2;
 
-            using base_type = basic_atomic_impl<int, __IMPL_ATOMIC_TASK_TYPE> ;
+            using base_type = basic_atomic_impl<int, squads::task> ;
             using self_type = typename base_type::self_type;
             using value_type = typename base_type::value_type;
             using difference_type = typename base_type::difference_type;;
@@ -157,10 +153,10 @@ namespace squads {
          * @brief Special version for long
          */
         template<>
-        struct _atomic<long, __IMPL_ATOMIC_TASK_TYPE> : basic_atomic_impl<long, __IMPL_ATOMIC_TASK_TYPE>  {
+        struct _atomic<long, squads::task> : basic_atomic_impl<long, squads::task>  {
             static constexpr bool is_always_lock_free  = ATOMIC_LONG_LOCK_FREE == 2;
 
-            using base_type = basic_atomic_impl<long, __IMPL_ATOMIC_TASK_TYPE> ;
+            using base_type = basic_atomic_impl<long, squads::task> ;
             using self_type = typename base_type::self_type;
             using value_type = typename base_type::value_type;
             using difference_type = typename base_type::difference_type;;
@@ -179,10 +175,10 @@ namespace squads {
          * @brief Special version for long long
          */
         template<>
-        struct _atomic<long long, __IMPL_ATOMIC_TASK_TYPE> : basic_atomic_impl<long long, __IMPL_ATOMIC_TASK_TYPE>  {
+        struct _atomic<long long, squads::task> : basic_atomic_impl<long long, squads::task>  {
             static constexpr bool is_always_lock_free  = ATOMIC_LONG_LOCK_FREE == 2;
 
-            using base_type = basic_atomic_impl<long long, __IMPL_ATOMIC_TASK_TYPE> ;
+            using base_type = basic_atomic_impl<long long, squads::task> ;
             using self_type = typename base_type::self_type;
             using value_type = typename base_type::value_type;
             using difference_type = typename base_type::difference_type;;
@@ -202,10 +198,10 @@ namespace squads {
          * @brief Special version for unsigned char
          */
         template<>
-        struct _atomic<unsigned char, __IMPL_ATOMIC_TASK_TYPE> : basic_atomic_impl<unsigned char, __IMPL_ATOMIC_TASK_TYPE> {
+        struct _atomic<unsigned char, squads::task> : basic_atomic_impl<unsigned char, squads::task> {
             static constexpr bool is_always_lock_free  = ATOMIC_CHAR_LOCK_FREE == 2;
 
-            using base_type = basic_atomic_impl<unsigned char, __IMPL_ATOMIC_TASK_TYPE> ;
+            using base_type = basic_atomic_impl<unsigned char, squads::task> ;
             using self_type = typename base_type::self_type;
             using value_type = typename base_type::value_type;
             using difference_type = typename base_type::difference_type;;
@@ -224,10 +220,10 @@ namespace squads {
          * @brief Special version for short
          */
         template<>
-        struct _atomic<unsigned short, __IMPL_ATOMIC_TASK_TYPE> : basic_atomic_impl<unsigned short, __IMPL_ATOMIC_TASK_TYPE>  {
+        struct _atomic<unsigned short, squads::task> : basic_atomic_impl<unsigned short, squads::task>  {
             static constexpr bool is_always_lock_free  = ATOMIC_SHORT_LOCK_FREE == 2;
 
-            using base_type = basic_atomic_impl<unsigned short, __IMPL_ATOMIC_TASK_TYPE> ;
+            using base_type = basic_atomic_impl<unsigned short, squads::task> ;
             using self_type = typename base_type::self_type;
             using value_type = typename base_type::value_type;
             using difference_type = typename base_type::difference_type;;
@@ -246,10 +242,10 @@ namespace squads {
          * @brief Special version for int
          */
         template<>
-        struct _atomic<unsigned int, __IMPL_ATOMIC_TASK_TYPE> : basic_atomic_impl<unsigned int, __IMPL_ATOMIC_TASK_TYPE>  {
+        struct _atomic<unsigned int, squads::task> : basic_atomic_impl<unsigned int, squads::task>  {
             static constexpr bool is_always_lock_free  = ATOMIC_INT_LOCK_FREE == 2;
 
-            using base_type = basic_atomic_impl<unsigned int, __IMPL_ATOMIC_TASK_TYPE> ;
+            using base_type = basic_atomic_impl<unsigned int, squads::task> ;
             using self_type = typename base_type::self_type;
             using value_type = typename base_type::value_type;
             using difference_type = typename base_type::difference_type;;
@@ -268,10 +264,10 @@ namespace squads {
          * @brief Special version for long
          */
         template<>
-        struct _atomic<unsigned long, __IMPL_ATOMIC_TASK_TYPE> : basic_atomic_impl<unsigned long, __IMPL_ATOMIC_TASK_TYPE>  {
+        struct _atomic<unsigned long, squads::task> : basic_atomic_impl<unsigned long, squads::task>  {
             static constexpr bool is_always_lock_free  = ATOMIC_LONG_LOCK_FREE == 2;
 
-            using base_type = basic_atomic_impl<unsigned long, __IMPL_ATOMIC_TASK_TYPE> ;
+            using base_type = basic_atomic_impl<unsigned long, squads::task> ;
             using self_type = typename base_type::self_type;
             using value_type = typename base_type::value_type;
             using difference_type = typename base_type::difference_type;;
@@ -290,10 +286,10 @@ namespace squads {
          * @brief Special version for char16_t
          */
         template<>
-        struct _atomic<char16_t, __IMPL_ATOMIC_TASK_TYPE> : basic_atomic_impl<char16_t, __IMPL_ATOMIC_TASK_TYPE>  {
+        struct _atomic<char16_t, squads::task> : basic_atomic_impl<char16_t, squads::task>  {
             static constexpr bool is_always_lock_free  = ATOMIC_CHAR16_T_LOCK_FREE == 2;
 
-            using base_type = basic_atomic_impl<char16_t, __IMPL_ATOMIC_TASK_TYPE> ;
+            using base_type = basic_atomic_impl<char16_t, squads::task> ;
             using self_type = typename base_type::self_type;
             using value_type = typename base_type::value_type;
             using difference_type = typename base_type::difference_type;;
@@ -312,10 +308,10 @@ namespace squads {
          * @brief Special version for char32_t
          */
         template<>
-        struct _atomic<char32_t, __IMPL_ATOMIC_TASK_TYPE> : basic_atomic_impl<char32_t, __IMPL_ATOMIC_TASK_TYPE>  {
+        struct _atomic<char32_t, squads::task> : basic_atomic_impl<char32_t, squads::task>  {
             static constexpr bool is_always_lock_free  = ATOMIC_CHAR32_T_LOCK_FREE == 2;
 
-            using base_type = basic_atomic_impl<char32_t, __IMPL_ATOMIC_TASK_TYPE> ;
+            using base_type = basic_atomic_impl<char32_t, squads::task> ;
             using self_type = typename base_type::self_type;
             using value_type = typename base_type::value_type;
             using difference_type = typename base_type::difference_type;;
@@ -334,10 +330,10 @@ namespace squads {
          * @brief Special version for wchar_t
          */
         template<>
-        struct _atomic<wchar_t, __IMPL_ATOMIC_TASK_TYPE> : basic_atomic_impl<wchar_t, __IMPL_ATOMIC_TASK_TYPE>  {
+        struct _atomic<wchar_t, squads::task> : basic_atomic_impl<wchar_t, squads::task>  {
             static constexpr bool is_always_lock_free  = ATOMIC_WCHAR_T_LOCK_FREE == 2;
 
-            using base_type = basic_atomic_impl<wchar_t, __IMPL_ATOMIC_TASK_TYPE> ;
+            using base_type = basic_atomic_impl<wchar_t, squads::task> ;
             using self_type = typename base_type::self_type;
             using value_type = typename base_type::value_type;
             using difference_type = typename base_type::difference_type;
@@ -355,7 +351,7 @@ namespace squads {
         /**
          * @brief Special version for pointer
          */
-        template<typename T, class TTASK = __IMPL_ATOMIC_TASK_TYPE>
+        template<typename T, class TTASK = squads::task>
         struct _atomic_ptr : basic_atomic_impl<T*, TTASK>  {
             static constexpr bool is_always_lock_free  = ATOMIC_POINTER_LOCK_FREE == 2;
 

@@ -23,15 +23,11 @@
 
 
 
-
 SQUADS_EXTERNC_BEGINN
 
 namespace squads {
     namespace arch {
         
-
-        void arch_yield();
-
         /**
         * Get the current micros
         * @return Current micros
@@ -48,13 +44,8 @@ namespace squads {
          *  @return Current tick count.
          */
         unsigned int arch_get_ticks();
-
-
-        void arch_disable_interrupts();
-        void arch_enable_interrupts();
     
-        void arch_schedular_suspend();
-        void arch_schedular_resume();
+        
 
         typedef struct critical_lock critical_lock_t;
 
@@ -67,13 +58,21 @@ namespace squads {
         int arch_spinlock_aacquire(spin_lock_t* lock, unsigned int timeout);
         void arch_spinlock_release(spin_lock_t* lock);
 
+        
+        void arch_yield() ;
+ 
+        int arch_disable_interrupts_isr() ;
+        void arch_enable_interrupts_isr(int state) ;
+
+        void arch_disable_interrupts() ;
+        void arch_enable_interrupts();
+
+        void arch_schedular_suspend();
+        void arch_schedular_resume();
+
         void arch_task_panic();
 
         void arch_delay(const unsigned long& ts);
-
-
-
-       
 
     }
 }

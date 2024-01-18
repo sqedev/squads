@@ -72,9 +72,6 @@ namespace squads {
 
             spinlock_release(lock->handle);
         }
-        void arch_yield() {
-            taskYIELD();
-        }
         void arch_task_panic() {
             printf("libsquads panic :!! ");
             for(;;) { taskYIELD(); }
@@ -113,18 +110,17 @@ namespace squads {
         void arch_delay(const unsigned long& ts) {
             vTaskDelay( ts );
         }
-        void arch_disable_interrupts() {
-            taskDISABLE_INTERRUPTS();
-        }
-        void arch_enable_interrupts() {
-            taskENABLE_INTERRUPTS();
-        }
-        void arch_schedular_suspend() {
-            vTaskSuspendAll();
-        }
-        void arch_schedular_resume() {
-            xTaskResumeAll();
-        }
+
+        void arch_yield()                     { taskYIELD(); }
+ 
+int arch_disable_interrupts_isr()   {  return portSET_INTERRUPT_MASK_FROM_ISR(); }
+void arch_enable_interrupts_isr(int state)   {  portCLEAR_INTERRUPT_MASK_FROM_ISR(state); }
+
+void arch_disable_interrupts()       { taskDISABLE_INTERRUPTS(); }
+void arch_enable_interrupts()        { taskENABLE_INTERRUPTS();} 
+
+void arch_schedular_suspend()        { vTaskSuspendAll();} 
+void arch_schedular_resume()         {  xTaskResumeAll();}
 
     }
 }
